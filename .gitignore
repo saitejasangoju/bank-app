@@ -33,5 +33,9 @@ build/
 .vscode/
 
 mvnw
+
+.metadata/
+.mvn/
+
 mvnw.cmd
 
