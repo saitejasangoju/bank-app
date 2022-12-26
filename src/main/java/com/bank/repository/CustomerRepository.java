@@ -8,6 +8,6 @@ import com.bank.entity.Customer;
 @Repository
 public interface CustomerRepository extends MongoRepository<Customer, String>{
 
-	Customer findByCustomerAadhar(String Aadhar);
+	Customer findByAadhar(String Aadhar);
 
 }

@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bank.dto.DepositMethod;
+import com.bank.dto.DepositAndWithdrawal;
+import com.bank.dto.MoneyTransfer;
 import com.bank.entity.Account;
 import com.bank.entity.Customer;
 import com.bank.entity.Transaction;
@@ -34,12 +35,12 @@ public class BankController {
 		return service.create(customer);
 	}
 	
-	@PutMapping("/{customerId}")
-	public Customer update(@PathVariable String customerId, @RequestBody Customer customer) {
-		return service.update(customerId, customer);
+	@PutMapping("/{id}")
+	public Customer update(@PathVariable String id, @RequestBody Customer customer) {
+		return service.update(id, customer);
 	}
 	 
-	@DeleteMapping("/{customerId}")
+	@DeleteMapping("/{id}")
 	public void delete(@PathVariable String customerId) {
 		service.delete(customerId);
 	}
@@ -49,39 +50,34 @@ public class BankController {
 		return service.getAccount(accountNumber);
 	}
 
-//	@PutMapping("/{customerId}/account/{accountNumber}/deposit")
-//	public String deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody Customer customer) throws Exception {
-//		return service.deposit(customerId, accountNumber, customer);
-//	}
 	@PutMapping("/account/deposit")
-	public String deposit(@RequestBody DepositMethod depositObj) throws Exception {
-		return service.deposit(depositObj);
+	public String deposit(@RequestBody DepositAndWithdrawal obj) throws Exception {
+		return service.deposit(obj);
 	}
 	
-	@PutMapping("/{customerId}/account/{accountNumber}/withdrawal")
-	public String withdrawal(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody Customer customer) throws Exception {
-		return service.withdrawal(customerId, accountNumber, customer);
+	@PutMapping("/account/withdrawal")
+	public String withdrawal(@RequestBody DepositAndWithdrawal obj) throws Exception {
+		return service.withdrawal(obj);
 	}
 	
-	@PutMapping("/{customerId}/account/{accountNumber}/deactivate")
-	public String deActivate(@PathVariable String customerId, @PathVariable String accountNumber) {
-		return service.deActivate(customerId, accountNumber);
+	@PutMapping("/account/deactivate/{accountNumber}")
+	public String deActivate(@PathVariable String accountNumber) {
+		return service.deActivate(accountNumber);
 	}
 	
-	@PutMapping("/{customerId}/account/{accountNumber}/activate")
-	public String activate(@PathVariable String customerId, @PathVariable String accountNumber) {
-		return service.activate(customerId, accountNumber);
+	@PutMapping("/account/activate/{accountNumber}")
+	public String activate(@PathVariable String accountNumber) {
+		return service.activate(accountNumber);
 	}
 	
-	@GetMapping("/{customerId}/account/{accountNumber}/transaction")
-	public List<Transaction> getAllTransaction(@PathVariable String customerId, @PathVariable String accountNumber) {
-		return service.getAllTransactions(customerId, accountNumber);
+	@GetMapping("/account/transaction/{accountNumber}")
+	public List<Transaction> getAllTransaction(@PathVariable String accountNumber) {
+		return service.getAllTransactions(accountNumber);
 	}
 	
-	@PutMapping("/{customerId}/account/{accountNumber}/transfer")
-	public String transfer(@PathVariable String customerId,  @PathVariable String accountNumber, @RequestBody Customer ReceivingCustomer) throws Exception {
-		return service.moneyTransfer(customerId, accountNumber, ReceivingCustomer);
-		
+	@PutMapping("/account/transfer")
+	public String transfer(@RequestBody MoneyTransfer obj) throws Exception {
+		return service.moneyTransfer(obj);
 	}
 
 }
