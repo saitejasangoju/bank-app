@@ -11,10 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.bank.dto.MoneyTransfer;
 import com.bank.entity.Account;
 import com.bank.entity.Customer;
@@ -23,7 +21,6 @@ import com.bank.entity.TransactionType;
 import com.bank.repository.AccountRepository;
 import com.bank.repository.CustomerRepository;
 import com.bank.repository.TransactionRepository;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -38,16 +35,10 @@ public class BankService {
 	private TransactionRepository transactionRepo;
 
 	// getting current date and time
-//	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//	Date date = new Date();
-//	String dateTime = formatter.format(date);
-//	DateTimeFormatter date = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//	DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm:ss");
-//	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	LocalDateTime now = LocalDateTime.now();
 
-	// listing all
+	// listing all customers
 	public List<Customer> getCustomers() {
 		log.info("fetched all the details ");
 		return customerRepo.findAll();
@@ -147,25 +138,34 @@ public class BankService {
 		else
 			throw new Exception("Account is de-activated");
 	}
-
-	public Account accountDeactivate(String customerId, String accountNumber) {
+	
+	// de-activating account 
+	public Account accountDeactivate(String customerId, String accountNumber) throws Exception {
 		Customer customer = customerRepo.findById(customerId)
 				.orElseThrow(() -> new NoSuchElementException("Customer doesn't exist"));
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		account.setActive(false);
+		if(account.isActive() == true)
+			account.setActive(false);
+		else
+			throw new Exception("Account is already de-activated");
 		accountRepo.save(account);
 		return account;
 	}
 	
-	public Account accountActivate(String customerId, String accountNumber) {
+	// activating account
+	public Account accountActivate(String customerId, String accountNumber) throws Exception {
 		Customer customer = customerRepo.findById(customerId)
 				.orElseThrow(() -> new NoSuchElementException("Customer doesn't exist"));
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		account.setActive(true);
+		if(account.isActive() == false)
+			account.setActive(true);
+		else
+			throw new Exception("Account is already active");
 		accountRepo.save(account);
 		return account;
 	}
 
+	// deposit money into account
 	public Transaction deposit(String customerId, String accountNumber, Transaction transaction) throws Exception {
 		Customer existingCustomer = customerRepo.findById(customerId).orElseThrow(
 				() -> new NoSuchElementException("Customer doesn't exists with id " + customerId));
@@ -187,7 +187,7 @@ public class BankService {
 		return transaction;
 	}
 
-	// withdrawing some amount from particular account using customer id
+	// withdrawing money from account
 	public Transaction withdrawal(String customerId, String accountNumber, Transaction transaction) throws Exception {
 		Customer existingCustomer = customerRepo.findById(customerId).orElseThrow(
 				() -> new NoSuchElementException("Customer doesn't exists with id " + customerId));
@@ -206,17 +206,14 @@ public class BankService {
 		return transaction;
 	}
 	
-	public List<Transaction> getTransactions(){
-		return transactionRepo.findAll();
-	}
-		
+	// get transactions by id
 	public Transaction getTransactionsById(String id){
 		Transaction transaction = transactionRepo.findById(id)
 				.orElseThrow(() -> new NoSuchElementException("Transaction doesn't exist"));
 		return transaction;
 	}
 
-	// transfer money from one account to another using customer id
+	// transfer money from one account to another account using account number
 	public List<Transaction> moneyTransfer(MoneyTransfer transferObj) throws Exception {
 		List<Transaction> transactions = new ArrayList<>();
 		Account sender = accountRepo.findByAccountNumber(transferObj.getSender());
@@ -328,6 +325,7 @@ public class BankService {
 		return randomStr;
 	}
 
+	//
 	public String generateTransactionId() {
 		Random random = new Random();
 		String randomStr = "";
