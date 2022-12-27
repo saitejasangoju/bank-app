@@ -215,6 +215,7 @@ public class BankService {
 
 	// transfer money from one account to another account using account number
 	public List<Transaction> moneyTransfer(MoneyTransfer transferObj) throws Exception {
+		// list for storing transactions at sender and receiver sides 
 		List<Transaction> transactions = new ArrayList<>();
 		Account sender = accountRepo.findByAccountNumber(transferObj.getSender());
 		log.info("account id of sender is " + transferObj.getSender());
@@ -226,7 +227,7 @@ public class BankService {
 		// checking for valid reciever account
 		if (receiver.isActive() == false)
 			throw new NotActiveException("Receiver account is not active");
-
+		// transaction at sender
 		Transaction transactionAtSender = new Transaction();
 		double debitAmount = transferObj.getAmount();
 		double balanceAfterDebit = sender.getAccountBalance() - debitAmount;
@@ -241,7 +242,7 @@ public class BankService {
 		transactions.add(transactionAtSender);
 		sender.setAccountBalance(balanceAfterDebit);
 		accountRepo.save(sender);
-	
+		// transaction at receiver
 		Transaction transactionAtReceiver = new Transaction();
 		double creditAmount = transferObj.getAmount();
 		double balanceAfterCredit = receiver.getAccountBalance() + creditAmount;
