@@ -1,6 +1,7 @@
 package com.bank.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,5 +51,4 @@ public class AccountController {
 	public Account accountActivate(@PathVariable String customerId, @PathVariable String accountNumber) throws Exception {
 		return service.accountActivate(customerId, accountNumber);
 	}
-
 }

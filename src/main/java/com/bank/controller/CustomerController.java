@@ -17,7 +17,6 @@ import com.bank.service.BankService;
 @RestController
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
-	
 	@Autowired
 	private BankService service;
 	
