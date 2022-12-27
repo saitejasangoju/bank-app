@@ -11,10 +11,14 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Document(value="account")
 public class Account {
+	@Id
+	private String aid;
+	private String customerId;
 	private String accountNumber;
 	private String accountType;
-	private String ifscCode = "SBI2345";
+	private String ifscCode;
 	private double accountBalance;
 	private boolean isActive = true;
 	
