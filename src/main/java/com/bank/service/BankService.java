@@ -38,12 +38,6 @@ public class BankService {
 	private TransactionRepository transactionRepo;
 
 	// getting current date and time
-//	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//	Date date = new Date();
-//	String dateTime = formatter.format(date);
-//	DateTimeFormatter date = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//	DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm:ss");
-//	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 	LocalDateTime now = LocalDateTime.now();
 
@@ -142,38 +136,46 @@ public class BankService {
 		Customer customer = customerRepo.findById(customerId)
 				.orElseThrow(() -> new NoSuchElementException("Customer doesn't exist"));
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		if(account.isActive() == true)
+		if (account.isActive() == true)
 			return account;
 		else
 			throw new Exception("Account is de-activated");
 	}
 
-	public Account accountDeactivate(String customerId, String accountNumber) {
+	// de-activating account
+	public Account accountDeactivate(String customerId, String accountNumber) throws Exception {
 		Customer customer = customerRepo.findById(customerId)
 				.orElseThrow(() -> new NoSuchElementException("Customer doesn't exist"));
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		account.setActive(false);
+		if (account.isActive() == true)
+			account.setActive(false);
+		else
+			throw new Exception("Account is already de-activated");
 		accountRepo.save(account);
 		return account;
 	}
-	
-	public Account accountActivate(String customerId, String accountNumber) {
+
+	// activating account
+	public Account accountActivate(String customerId, String accountNumber) throws Exception {
 		Customer customer = customerRepo.findById(customerId)
 				.orElseThrow(() -> new NoSuchElementException("Customer doesn't exist"));
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		account.setActive(true);
+		if (account.isActive() == false)
+			account.setActive(true);
+		else
+			throw new Exception("Account is already active");
 		accountRepo.save(account);
 		return account;
 	}
 
 	public Transaction deposit(String customerId, String accountNumber, Transaction transaction) throws Exception {
-		Customer existingCustomer = customerRepo.findById(customerId).orElseThrow(
-				() -> new NoSuchElementException("Customer doesn't exists with id " + customerId));
+		Customer existingCustomer = customerRepo.findById(customerId)
+				.orElseThrow(() -> new NoSuchElementException("Customer doesn't exists with id " + customerId));
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		if(account.isActive() == false) {
+		if (account.isActive() == false) {
 			throw new NotActiveException("Account is not active");
 		}
-		if(transaction.getAmount() <= 0) {
+		if (transaction.getAmount() <= 0) {
 			throw new Exception("Sorry, You cannot deposit 0 or lesser");
 		}
 		transaction.setCustomerId(customerId);
@@ -189,10 +191,10 @@ public class BankService {
 
 	// withdrawing some amount from particular account using customer id
 	public Transaction withdrawal(String customerId, String accountNumber, Transaction transaction) throws Exception {
-		Customer existingCustomer = customerRepo.findById(customerId).orElseThrow(
-				() -> new NoSuchElementException("Customer doesn't exists with id " + customerId));
+		Customer existingCustomer = customerRepo.findById(customerId)
+				.orElseThrow(() -> new NoSuchElementException("Customer doesn't exists with id " + customerId));
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		if(account.isActive() == false) {
+		if (account.isActive() == false) {
 			throw new Exception("Account is not active");
 		}
 		transaction.setCustomerId(customerId);
@@ -205,18 +207,15 @@ public class BankService {
 		accountRepo.save(account);
 		return transaction;
 	}
-	
-	public List<Transaction> getTransactions(){
-		return transactionRepo.findAll();
-	}
-		
-	public Transaction getTransactionsById(String id){
+
+	// get transactions by id
+	public Transaction getTransactionsById(String id) {
 		Transaction transaction = transactionRepo.findById(id)
 				.orElseThrow(() -> new NoSuchElementException("Transaction doesn't exist"));
 		return transaction;
 	}
 
-	// transfer money from one account to another using customer id
+	// transfer money from one account to another using account number
 	public List<Transaction> moneyTransfer(MoneyTransfer transferObj) throws Exception {
 		List<Transaction> transactions = new ArrayList<>();
 		Account sender = accountRepo.findByAccountNumber(transferObj.getSender());
@@ -244,7 +243,7 @@ public class BankService {
 		transactions.add(transactionAtSender);
 		sender.setAccountBalance(balanceAfterDebit);
 		accountRepo.save(sender);
-	
+
 		Transaction transactionAtReceiver = new Transaction();
 		double creditAmount = transferObj.getAmount();
 		double balanceAfterCredit = receiver.getAccountBalance() + creditAmount;
@@ -279,7 +278,7 @@ public class BankService {
 		String recentDate = recent.getDate();
 		log.info("fetched recent date is {} ", recentDate);
 		String splitRecentDate[] = recentDate.split(" ");
-		// it contains only date, we don't need time 
+		// it contains only date, we don't need time
 		String onlyRecentDate = splitRecentDate[0];
 		log.info("fetched only date {} ", onlyRecentDate);
 		String splitOnlyDate[] = onlyRecentDate.split("/");
@@ -315,12 +314,11 @@ public class BankService {
 		Random random = new Random();
 		String randomStr = "";
 		for (int i = 1; i <= 13; i++) {
-			if(i == 1) {
+			if (i == 1) {
 				int num = random.nextInt(9);
-				if(num == 0) 
-					randomStr += num + 1;	
-			}
-			else {
+				if (num == 0)
+					randomStr += num + 1;
+			} else {
 				int num = random.nextInt(9);
 				randomStr += Integer.toString(num);
 			}
