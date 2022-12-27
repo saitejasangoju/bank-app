@@ -10,16 +10,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.bank.dto.MoneyTransfer;
 import com.bank.entity.Account;
 import com.bank.entity.Customer;
-import com.bank.entity.Transaction;
 import com.bank.service.BankService;
 
 @RestController
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
-	
 	@Autowired
 	private BankService service;
 	
@@ -51,30 +48,5 @@ public class CustomerController {
 	@GetMapping("/{customerId}/accounts/{accountNumber}")
 	public Account getCustomerAccountByAccountNumber(@PathVariable String customerId, @PathVariable String accountNumber) throws Exception {
 		return service.getCustomerAccountByAccountNumber(customerId, accountNumber);
-	}
-
-	@PutMapping("/{customerId}/accounts/{accountNumber}/deactivate")
-	public Account accountDeactivate(@PathVariable String customerId, @PathVariable String accountNumber) throws Exception {
-		return service.accountDeactivate(customerId, accountNumber);
-	}
-	
-	@PutMapping("/{customerId}/accounts/{accountNumber}/activate")
-	public Account accountActivate(@PathVariable String customerId, @PathVariable String accountNumber) throws Exception {
-		return service.accountActivate(customerId, accountNumber);
-	}
-	
-	@PostMapping("/{customerId}/accounts/{accountNumber}/deposit")
-	public Transaction deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody Transaction transaction) throws Exception {
-		return service.deposit(customerId, accountNumber, transaction);
-	}
-
-	@PostMapping("/{customerId}/accounts/{accountNumber}/withdrawal")
-	public Transaction withdrawal(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody Transaction transaction) throws Exception {
-		return service.withdrawal(customerId, accountNumber, transaction);
-	}
-
-	@PostMapping("/{customerId}/accounts/{accountNumber}/transfer")
-	public List<Transaction> transfer(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody MoneyTransfer transferObj) throws Exception {
-		return service.moneyTransfer(transferObj);
 	}
 }
