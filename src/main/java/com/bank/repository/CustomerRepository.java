@@ -7,7 +7,6 @@ import com.bank.entity.Customer;
 
 @Repository
 public interface CustomerRepository extends MongoRepository<Customer, String>{
-
-	Customer findByAadhar(String Aadhar);
-
+	
+	Customer findByAadhar(String aadhar);
 }

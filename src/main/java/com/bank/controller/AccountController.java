@@ -1,7 +1,8 @@
 package com.bank.controller;
 
+import java.io.NotActiveException;
 import java.util.List;
-
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,47 +12,48 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
-import com.bank.service.BankService;
+import com.bank.service.AccountService;
 
 
 @RestController
-@RequestMapping("/api/v1/accounts")
+@RequestMapping("/api/v1/customers")
 public class AccountController {
 	
 	@Autowired
-	private BankService service;
+	private AccountService service;
 	
-	@GetMapping
-	public List<Account> getAll(){
-		return service.getAccounts();
+	@Autowired
+	ModelMapper modelMapper;
+	
+	@GetMapping("/{customerId}/accounts")
+	public List<Account> list(@PathVariable String customerId){
+		return service.list(customerId);
 	}
 	
-	@GetMapping("/{accountNumber}")
-	public Account getOne(@PathVariable String accountNumber) {
-		return service.getAccountByAccountNumber(accountNumber);
+	@GetMapping("/{customerId}/accounts/{accountNumber}")
+	public Account get(@PathVariable String accountNumber) {
+		return service.getByAccountNumber(accountNumber);
 	}
 	
-	@PostMapping
-	public Account create(@RequestBody Account account) {
-		return service.createAccount(account);
+	@PostMapping("/{customerId}/accounts")
+	public Account create(@RequestBody AccountDto accountDto) {
+		return service.create(modelMapper.map(accountDto, Account.class));
 	}
 	
-	@DeleteMapping("/{accountNumber}")
+	@DeleteMapping("/{customerId}/accounts/{accountNumber}")
 	public Account delete(@PathVariable String accountNumber) {
-		return service.deleteAccount(accountNumber);
+		return service.delete(accountNumber);
 	}
 	
-	@PutMapping("/{customerId}/accounts/{accountNumber}/deactivate")
-	public Account accountDeactivate(@PathVariable String customerId, @PathVariable String accountNumber) throws Exception {
-		return service.accountDeactivate(customerId, accountNumber);
+	@PutMapping("/{accountNumber}/customers/{customerId}/activate")
+	public Account activate(@PathVariable String customerId, @PathVariable String accountNumber) {
+		return service.activate(customerId, accountNumber);
 	}
 	
-	@PutMapping("/{customerId}/accounts/{accountNumber}/activate")
-	public Account accountActivate(@PathVariable String customerId, @PathVariable String accountNumber) throws Exception {
-		return service.accountActivate(customerId, accountNumber);
+	@PutMapping("/{accountNumber}/deactivate")
+	public Account deactivate(@PathVariable String customerId, @PathVariable String accountNumber) throws NotActiveException {
+		return service.deactivate(customerId, accountNumber);
 	}
-
-
 }

@@ -3,7 +3,6 @@ package com.bank.dto;
 import lombok.Data;
 
 @Data
-public class MoneyTransfer {
+public class CreditDebit {
 	private double amount;
-	private String receiver;
 }
