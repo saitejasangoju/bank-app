@@ -1,6 +1,8 @@
 package com.bank.controller;
 
+import java.io.IOException;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,43 +12,40 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.bank.entity.Account;
+import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Customer;
-import com.bank.service.BankService;
+import com.bank.service.CustomerService;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
 	@Autowired
-	private BankService service;
+	private CustomerService service;
+	
+	@ApiIgnore
+	@GetMapping("/home")
+	public void home(HttpServletResponse response) throws IOException {
+		response.sendRedirect("/swagger-ui.html");
+	}
 	
 	@GetMapping
-	public List<Customer> getAll() {
-		return service.getCustomers();
+	public List<Customer> list() {
+		return service.list();
 	}
 
 	@PostMapping
 	public Customer create(@RequestBody Customer customer) throws Exception {
-		return service.createCustomer(customer);
+		return service.create(customer);
 	}
 	
 	@PutMapping("/{customerId}")
-	public Customer update(@PathVariable String customerId, @RequestBody Customer customer) {
-		return service.updateCustomer(customerId, customer);
+	public Customer update(@PathVariable String customerId, @RequestBody CustomerUpdateDto customer) {
+		return service.update(customerId, customer);
 	}
 	 
 	@DeleteMapping("/{customerId}")
 	public Customer delete(@PathVariable String customerId) {
-		return service.deleteCustomer(customerId);
-	}
-	
-	@GetMapping("/{customerId}/accounts")
-	public List<Account> getCustomerAccounts(@PathVariable String customerId) throws Exception {
-		return service.getCustomerAccounts(customerId);
-	}
-	
-	@GetMapping("/{customerId}/accounts/{accountNumber}")
-	public Account getCustomerAccountByAccountNumber(@PathVariable String customerId, @PathVariable String accountNumber) throws Exception {
-		return service.getCustomerAccountByAccountNumber(customerId, accountNumber);
+		return service.delete(customerId);
 	}
 }
