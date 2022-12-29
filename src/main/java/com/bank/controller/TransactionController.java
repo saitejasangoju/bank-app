@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bank.dto.CreditDebit;
 import com.bank.dto.MoneyTransfer;
 import com.bank.entity.Transaction;
+import com.bank.exception.CustomerNotMatchAccount;
 import com.bank.service.TransactionService;
 
 @RestController
@@ -38,12 +39,12 @@ public class TransactionController {
 	}
 	
 	@PostMapping("/{customerId}/accounts/{accountNumber}/transactions/deposit")
-	public Transaction deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit credit) throws NotActiveException {
+	public Transaction deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit credit) throws CustomerNotMatchAccount, NotActiveException {
 		return service.deposit(customerId, accountNumber, credit);
 	}
 
 	@PostMapping("/{customerId}/accounts/{accountNumber}/transactions/withdrawal")
-	public Transaction withdrawal(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit debit) throws NotActiveException {
+	public Transaction withdrawal(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit debit) throws NotActiveException, NotActiveException, CustomerNotMatchAccount {
 		return service.withdrawal(customerId, accountNumber, debit);
 	}
 

@@ -1,21 +1,17 @@
 package com.bank.service;
 
 import java.io.NotActiveException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
-
 import com.bank.dto.CreditDebit;
 import com.bank.dto.MoneyTransfer;
 import com.bank.entity.Account;
 import com.bank.entity.Transaction;
 import com.bank.entity.TransactionType;
+import com.bank.exception.CustomerNotMatchAccount;
 import com.bank.repository.AccountRepository;
 import com.bank.repository.TransactionRepository;
 import com.bank.util.Utility;
@@ -51,7 +47,7 @@ public class TransactionService {
 		util.validateCustomer(customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
 		if (account == null) {
-			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
+			throw new IllegalArgumentException(INVALID_ACCOUNT_NUMBER);
 		}
 		if (!account.getCustomerId().equals(customerId)) {
 			throw new IllegalArgumentException("Customer id doesn't contain account of number " + accountNumber);
@@ -64,7 +60,7 @@ public class TransactionService {
 		util.validateCustomer(customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
 		if(account == null) {
-			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
+			throw new IllegalArgumentException(INVALID_ACCOUNT_NUMBER);
 		}
 		log.info("Customer fetched of id {} ", accountNumber);
 		List<Transaction> list = transactionRepo.findByAccountNumber(accountNumber);
@@ -101,7 +97,7 @@ public class TransactionService {
 	}
 
 	// deposit money into account
-	public Transaction deposit(String customerId, String accountNumber, CreditDebit credit) throws NotActiveException {
+	public Transaction deposit(String customerId, String accountNumber, CreditDebit credit) throws CustomerNotMatchAccount, NotActiveException {
 		if (credit.getAmount() <= 0) {
 			throw new IllegalArgumentException("Sorry, You cannot deposit 0 or lesser");
 		}
@@ -110,7 +106,7 @@ public class TransactionService {
 		if (account == null)
 			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
 		if (!account.getCustomerId().equals(customerId))
-			throw new IllegalArgumentException("customer doesn't have an account of number " + accountNumber);
+			throw new CustomerNotMatchAccount("customer doesn't have an account with number : " + accountNumber);
 		if (!account.isActive())
 			throw new NotActiveException("Account is not active");
 		Transaction transaction = new Transaction();
@@ -126,7 +122,7 @@ public class TransactionService {
 
 	// withdrawing money from account
 	public Transaction withdrawal(String customerId, String accountNumber, CreditDebit debit)
-			throws NotActiveException {
+			throws NotActiveException, CustomerNotMatchAccount{
 		if (debit.getAmount() <= 0) {
 			throw new IllegalArgumentException("Sorry, You cannot withdraw 0 or lesser");
 		}
@@ -135,7 +131,7 @@ public class TransactionService {
 		if (account == null)
 			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
 		if (!account.getCustomerId().equals(customerId))
-			throw new IllegalArgumentException("customer doesn't have an account of number " + accountNumber);
+			throw new CustomerNotMatchAccount("customer doesn't have an account with number : " + accountNumber);
 		if (!account.isActive())
 			throw new NotActiveException("Account is not active");
 		Transaction transaction = new Transaction();
@@ -166,22 +162,24 @@ public class TransactionService {
 			throw new NotActiveException("Receiver account is not active");
 		log.info("account number of receiver is " + transferObj.getReceiver());
 		// transaction at sender
-		Transaction transactionAtSender = new Transaction(TransactionType.WITHDRAW);
+		Transaction transactionAtSender = new Transaction();
 		double amount = transferObj.getAmount();
 		double balanceAfterDebit = sendingAccount.getAccountBalance() - amount;
 		log.info("balance after debit " + balanceAfterDebit);
 		transactionAtSender.setAccountNumber(sendingAccount.getAccountNumber());
 		transactionAtSender.setCustomerId(sendingAccount.getCustomerId());
 		transactionAtSender.setAmount(amount);
+		transactionAtSender.setType(TransactionType.WITHDRAW);
 		transactionAtSender = transactionRepo.save(transactionAtSender);
 		transactionsList.add(transactionAtSender);
 		// transaction at receiver
-		Transaction transactionAtReceiver = new Transaction(TransactionType.DEPOSIT);
+		Transaction transactionAtReceiver = new Transaction();
 		double balanceAfterCredit = receiverAccount.getAccountBalance() + amount;
 		log.info("balance after credit " + balanceAfterCredit);
 		transactionAtReceiver.setAccountNumber(receiverAccount.getAccountNumber());
 		transactionAtReceiver.setCustomerId(receiverAccount.getCustomerId());
 		transactionAtReceiver.setAmount(amount);
+		transactionAtReceiver.setType(TransactionType.DEPOSIT);
 		transactionAtReceiver = transactionRepo.save(transactionAtReceiver);
 		transactionsList.add(transactionAtReceiver);
 		// updating sender account

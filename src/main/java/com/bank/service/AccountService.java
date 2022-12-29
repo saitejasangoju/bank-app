@@ -98,9 +98,9 @@ public class AccountService {
 			throw new IllegalArgumentException("Customer doesn't have account of number " + accountNumber);
 		}
 		if (account.isActive()) {
-			account.setActive(true);
-		} else
 			throw new IllegalArgumentException("Account is already active");
+		} else
+			account.setActive(true);
 		accountRepo.save(account);
 		return account;
 	}

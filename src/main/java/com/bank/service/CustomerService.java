@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Customer;
+import com.bank.exception.AgeNotSatisfiedException;
 import com.bank.repository.CustomerRepository;
 import com.bank.util.Utility;
 import lombok.extern.slf4j.Slf4j;
@@ -41,14 +42,14 @@ public class CustomerService {
 		Period period = Period.between(currDate, dateOfBirth);
 		int age = Math.abs(period.getYears());
 		if (age < 18) {
-			throw new IllegalArgumentException("Sorry, You don't have enough age to open account. ");
+			throw new AgeNotSatisfiedException("Sorry, You don't have enough age to open account. ");
 		}
 		Customer existingCustomer = customerRepo.findByAadhar(customer.getAadhar());
 		// checking for valid aadhar number
 		if(customer.getAadhar().startsWith("0"))
-			throw new IllegalArgumentException("Invalid Aadhar Number");
+			throw new NoSuchElementException("Invalid Aadhar Number");
 		if (customer.getAadhar().length() != 12)
-			throw new IllegalArgumentException("Aadhar Number should be 12 digits ");
+			throw new NoSuchElementException("Aadhar Number should be 12 digits ");
 		// checking for existing customer using aadhar
 		if (existingCustomer != null) 
 			throw new IllegalArgumentException("Aadhar Number is already exist.");
