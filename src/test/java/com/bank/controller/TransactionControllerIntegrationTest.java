@@ -3,7 +3,8 @@ package com.bank.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import java.time.Instant;
+import java.util.List;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,12 +16,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.bank.BankApplication;
 import com.bank.dto.CreditDebit;
 import com.bank.dto.MoneyTransfer;
-import com.bank.entity.Account;
-import com.bank.entity.AccountType;
-import com.bank.entity.Address;
-import com.bank.entity.Customer;
 import com.bank.entity.Transaction;
-import com.bank.entity.TransactionType;
+import com.bank.repository.TransactionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BankApplication.class)
@@ -33,66 +30,72 @@ class TransactionControllerIntegrationTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private TransactionRepository transactionRepo;
 
-	Address address = new Address("23/4", "hyd", "telangana", "987789");
-	Customer customer = new Customer("731163625713", "teja", "2002-10-20", "9283773654", "teja@gmail.com",
-			"987678098543", address);
-
-	Account account = new Account("63aae0328a1acb3d34d568f5", "731163625713", "3714762657302", AccountType.SAVING,
-			"SBI21315", 25000.0, true);
-	Instant date = Instant.parse("2022-12-27T17:21:18.139Z");
-	Transaction transaction = new Transaction("63ac7b0ec00a170f750646b8", "731163625713", "3714762657302", date,
-			25000.0, TransactionType.DEPOSIT);
-
+	private String cid = "731163625713";
+	private String aid = "1621177018108";
+	private String tid = "";
 	
 	@Test
+	@Order(1)
 	void depositTest() throws Exception {
 		CreditDebit deposit = new CreditDebit(23000.0);
 		String content = objectMapper.writeValueAsString(deposit);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/731163625713/accounts/3714762657302/transactions/deposit").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.amount", is(23000.0)));
-	}
-	
-	@Test
-	void getByIdTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/v1/customers/731163625713/accounts/3714762657302/transactions/63ac7f8fc00a170f750646c1")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.amount", is(18000.0)));
-	}
-	
-	@Test
-	void getByAccountNumber() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/731163625713/accounts/3714762657302/transactions")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/"+cid+"/accounts/"+aid+"/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(23000.0)));
 	}
 
 	@Test
+	@Order(2)
 	void getRecentTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/731163625713/accounts/3714762657302/transactions")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/"+cid+"/accounts/"+aid+"/transactions/recent")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
 	@Test
+	@Order(3)
 	void withdrawalTest() throws Exception {
 		CreditDebit withdraw = new CreditDebit(21000);
 		String content = objectMapper.writeValueAsString(withdraw);
 		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/731163625713/accounts/3714762657302/transactions/withdrawal").content(content)
+				.post("/api/v1/customers/"+cid+"/accounts/"+aid+"/transactions/withdrawal").content(content)
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.amount", is(21000.0)));
 	}
 
 	@Test
+	@Order(4)
 	void transferTest() throws Exception {
-		MoneyTransfer transfer = new MoneyTransfer(3200.0, "3714762657301");
+		MoneyTransfer transfer = new MoneyTransfer(3200.0, "1621177018108");
 		String content = objectMapper.writeValueAsString(transfer);
 		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/731163625713/accounts/3714762657302/transactions/transfer").content(content)
+				.post("/api/v1/customers/"+cid+"/accounts/"+aid+"/transactions/transfer").content(content)
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
-
+	
+	@Test
+	@Order(5)
+	void getByAccountNumber() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/"+cid+"/accounts/"+aid+"/transactions")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		
+	}
+	
+	@Test
+	@Order(6)
+	void getByIdTest() throws Exception {
+		List<Transaction> list = transactionRepo.findByAccountNumber(aid);
+		Transaction trans;
+		trans= list.get(list.size() - 1);
+		tid = trans.getId();
+		System.out.println(tid);
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/v1/customers/"+cid+"/accounts/"+aid+"/transactions/"+tid)
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	}
 
 }
