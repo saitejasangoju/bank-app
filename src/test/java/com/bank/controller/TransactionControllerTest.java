@@ -107,7 +107,7 @@ class TransactionControllerTest {
 				.get("/api/v1/customers/831163625713/accounts/3714762657302/transactions/63ac7b0ec00a170f750646b8")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
 	}
-
+	
 	@Test
 	void invalidAccountNumberListTest() throws Exception {
 		Mockito.when(customerRepository.findById("831163625713")).thenReturn(Optional.of(customer3));
