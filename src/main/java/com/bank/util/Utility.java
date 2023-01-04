@@ -25,18 +25,18 @@ public class Utility {
 	// generating random number
 	public String generateAccountNumber() {
 		Random random = new Random();
-		String randomStr = "";
+		StringBuilder randomStr = new StringBuilder();
 		for (int i = 1; i <= 13; i++) {
 			if (i == 1) {
 				int num = random.nextInt(9);
 				if (num == 0)
-					randomStr += num + 1;
+					randomStr.append(num + 1);
 			} else {
 				int num = random.nextInt(9);
-				randomStr += Integer.toString(num);
+				randomStr.append(Integer.toString(num));
 			}
 		}
-		return randomStr;
+		return randomStr.toString();
 	}
 
 }

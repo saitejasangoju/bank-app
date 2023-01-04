@@ -6,13 +6,17 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Customer;
 import com.bank.exception.AgeNotSatisfiedException;
+import com.bank.exception.MethodArgumentNotValidException;
 import com.bank.repository.CustomerRepository;
 import com.bank.util.Utility;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -35,7 +39,7 @@ public class CustomerService {
 	}
 
 	// create customer
-	public Customer create(Customer customer) throws Exception {
+	public Customer create(Customer customer) throws Exception, MethodArgumentNotValidException {
 		// checking the age criteria using date of birth
 		LocalDate dateOfBirth = LocalDate.parse(customer.getDob());
 		LocalDate currDate = LocalDate.now();
@@ -48,8 +52,6 @@ public class CustomerService {
 		// checking for valid aadhar number
 		if(customer.getAadhar().startsWith("0"))
 			throw new NoSuchElementException("Invalid Aadhar Number");
-		if (customer.getAadhar().length() != 12)
-			throw new NoSuchElementException("Aadhar Number should be 12 digits ");
 		// checking for existing customer using aadhar
 		if (existingCustomer != null) 
 			throw new IllegalArgumentException("Aadhar Number is already exist.");
