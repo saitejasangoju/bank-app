@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bank.dto.CustomerDto;
 import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Customer;
 import com.bank.service.CustomerService;
@@ -33,9 +30,6 @@ public class CustomerController {
 	@Autowired
 	private CustomerService service;
 	
-	@Autowired
-	private ModelMapper modelMapper;
-	
 	@ApiIgnore
 	@GetMapping("/home")
 	public void home(HttpServletResponse response) throws IOException {
@@ -48,8 +42,8 @@ public class CustomerController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Customer> create(@RequestBody @Valid CustomerDto customer) throws Exception {
-		return new ResponseEntity<>(service.create(modelMapper.map(customer, Customer.class)), HttpStatus.CREATED);
+	public ResponseEntity<Customer> create(@RequestBody Customer customer) throws Exception {
+		return new ResponseEntity<>(service.create(customer), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{customerId}")
@@ -59,6 +53,6 @@ public class CustomerController {
 	 
 	@DeleteMapping("/{customerId}")
 	public ResponseEntity<Customer> delete(@PathVariable String customerId) {
-		return new ResponseEntity<>(service.delete(customerId), HttpStatus.OK);
+		return new ResponseEntity<>(service.delete(customerId), HttpStatus.ACCEPTED);
 	}
 }

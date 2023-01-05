@@ -2,15 +2,9 @@ package com.bank.dto;
 
 import com.bank.entity.Address;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class CustomerUpdateDto {
 	private String email;
 	private String phone;

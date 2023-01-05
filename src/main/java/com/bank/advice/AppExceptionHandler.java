@@ -2,7 +2,6 @@ package com.bank.advice;
 
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -47,10 +46,5 @@ public class AppExceptionHandler extends RuntimeException{
     
 	}
 	
-	@ResponseStatus(code = HttpStatus.NOT_ACCEPTABLE)
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public @ResponseBody ErrorResponse handleException(MethodArgumentNotValidException ex) {
-		return new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(), ex.getMessage());
-	}
 	
 }

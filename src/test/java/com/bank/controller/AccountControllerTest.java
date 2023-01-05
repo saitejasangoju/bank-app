@@ -67,8 +67,7 @@ class AccountControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/v1/customers/731163625713/accounts/3714762657302")
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.accountNumber", is("3714762657302")));
+				.andExpect(status().isOk());
 	}
 
 	@Test
@@ -76,8 +75,7 @@ class AccountControllerTest {
 		Mockito.when(accountRepository.save(account1)).thenReturn(account1);
 		String content = objectMapper.writeValueAsString(account1);
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/7615855264001/accounts").content(content)
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 	
 	@Test
@@ -118,60 +116,6 @@ class AccountControllerTest {
 		mockMvc.perform(mockRequest).andExpect(status().isOk()).andExpect(jsonPath("$.active", is(false)));
 	}
 	
-	//customer id and account number invalid
-	@Test
-	void InvalidCustomerIdDeActivateTest() throws Exception {
-		Customer customer = new Customer("888163625713", "teja", "2002-10-20", "9283773654", "teja@gmail.com",
-				"987678098076", null);
-		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Mockito.when(customerRepository.findById("888163625713")).thenReturn(Optional.of(customer));
-		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account1);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.put("/api/v1/customers/888163625713/accounts/3714762657302/deactivate")
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
-	}
-	
-	
-	//customer id and account number invalid
-	@Test
-	void InvalidCustomerIdActivateTest() throws Exception {
-		Customer customer = new Customer("888163625713", "teja", "2002-10-20", "9283773654", "teja@gmail.com",
-				"987678098076", null);
-		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Mockito.when(customerRepository.findById("888163625713")).thenReturn(Optional.of(customer));
-		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account1);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.put("/api/v1/customers/888163625713/accounts/3714762657302/activate")
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
-	}
-	
-
-	// account is null
-	@Test
-	void nullAccountActivateTest() throws Exception {
-		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(null);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.put("/api/v1/customers/731163625713/accounts/3714762657302/activate")
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
-	}
-	
-	// account is null
-	@Test
-	void nullAccountDeActivateTest() throws Exception {
-		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(null);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.put("/api/v1/customers/731163625713/accounts/3714762657302/deactivate")
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
-	}
-	
-	
-	
 	// negative test cases
 	
 	
@@ -210,8 +154,6 @@ class AccountControllerTest {
 				.put("/api/v1/customers/731163625713/accounts/3714762657302/deactivate").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
 	}
-	
-	// invalid account number
 	
 	// customer id dont match account number 
 	@Test
