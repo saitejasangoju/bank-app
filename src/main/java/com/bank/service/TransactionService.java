@@ -1,5 +1,6 @@
 package com.bank.service;
 
+import java.io.NotActiveException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,6 +15,7 @@ import com.bank.exception.CustomerNotMatchAccount;
 import com.bank.repository.AccountRepository;
 import com.bank.repository.TransactionRepository;
 import com.bank.util.Utility;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -21,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 public class TransactionService {
 
 	private static final String INVALID_ACCOUNT_NUMBER = "Invalid account number";
-	private static final String INVALID_CUSTOMER_REQUEST = "Customer deesn't contain account";
 
 	@Autowired
 	private Utility util;
@@ -33,21 +34,12 @@ public class TransactionService {
 	private TransactionRepository transactionRepo;
 
 	// list all transactions
-	public List<Transaction> list(String customerId, String accountNumber) throws CustomerNotMatchAccount {
+	public List<Transaction> list(String customerId, String accountNumber) {
 		util.validateCustomer(customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
 		if (account == null)
 			throw new NoSuchElementException("Account doesn't exist");
-		else if(!account.getCustomerId().equals(customerId))
-			throw new CustomerNotMatchAccount(INVALID_CUSTOMER_REQUEST);
-		List<Transaction> all= transactionRepo.findAll();
-		List<Transaction> list = new ArrayList<>();
-		for(Transaction t : all) {
-			if(t.getAccountNumber().equals(accountNumber)) {
-				list.add(t);
-			}
-		}
-		return list;		
+		return transactionRepo.findAll();
 	}
 
 	// get transactions by id
@@ -58,43 +50,54 @@ public class TransactionService {
 			throw new IllegalArgumentException(INVALID_ACCOUNT_NUMBER);
 		}
 		if (!account.getCustomerId().equals(customerId)) {
-			throw new IllegalArgumentException("Customer id doesn't contain account number " + accountNumber);
+			throw new IllegalArgumentException("Customer id doesn't contain account of number " + accountNumber);
 		}
 		return transactionRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Transaction doesn't exist"));
 	}
 
-	// getting recent transactions(2 days)
-	public List<Transaction> getRecentTransactions(String customerId, String accountNumber) throws CustomerNotMatchAccount {
+	// get last 2 days transactions by account number
+	public List<Transaction> getRecentTransactions(String customerId, String accountNumber) {
 		util.validateCustomer(customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
-		if(account == null) 
+		if(account == null) {
 			throw new IllegalArgumentException(INVALID_ACCOUNT_NUMBER);
-		else if(!account.getCustomerId().equals(customerId))
-			throw new CustomerNotMatchAccount(INVALID_CUSTOMER_REQUEST);
-		log.info("Account fetched of number {} ", accountNumber);
-		List<Transaction> allList = transactionRepo.findAll();
-		log.info("All list of transactions {}", allList);
-		List<Transaction> list = new ArrayList<>();
-		for(Transaction t : allList) {
-			if(t.getAccountNumber().equals(accountNumber)) {
-				list.add(t);
-			}
 		}
-		log.info("list of transactions {}", list);
+		log.info("Customer fetched of id {} ", accountNumber);
+		List<Transaction> list = transactionRepo.findByAccountNumber(accountNumber);
+		Transaction recent = list.get(list.size() - 1);
+		// it contains date and time
+		String recentDate = recent.getDate().toString();
+		log.info("fetched recent date is {} ", recentDate);
+		String[] splitRecentDate = recentDate.split("T");
+		// it contains only date, we don't need time
+		String onlyRecentDate = splitRecentDate[0];
+		log.info("fetched only date {} ", onlyRecentDate);
+		String[] splitOnlyDate = onlyRecentDate.split("-");
+		int recentDay = Integer.parseInt(splitOnlyDate[0]);
+		int recentMonth = Integer.parseInt(splitOnlyDate[1]);
+		int recentYear = Integer.parseInt(splitOnlyDate[2]);
 		List<Transaction> result = new ArrayList<>();
-		if(list.size() > 10) {
-			int start = list.size() - 10;
-			for(int i = start; i < list.size(); i++) {
-				result.add(list.get(i));
+		for (Transaction t : list) {
+			// transactionDate contains date and time
+			String transactionDate = t.getDate().toString();
+			log.info("fetched transaction date {} ", transactionDate);
+			String[] splitTransactionDate = transactionDate.split("T");
+			// it contains only date, time is removed
+			String onlyTransactionDate = splitTransactionDate[0];
+			log.info("fetched only date {} ", onlyTransactionDate);
+			String[] splitDate = onlyTransactionDate.split("-");
+			int day = Integer.parseInt(splitDate[0]);
+			int month = Integer.parseInt(splitDate[1]);
+			int year = Integer.parseInt(splitDate[2]);
+			if((month == recentMonth) && (year == recentYear) && ((recentDay - day) <= 2)) {
+				result.add(t);
 			}
 		}
-		else
-			return list;
 		return result;
 	}
 
 	// deposit money into account
-	public Transaction deposit(String customerId, String accountNumber, CreditDebit credit) {
+	public Transaction deposit(String customerId, String accountNumber, CreditDebit credit) throws CustomerNotMatchAccount, NotActiveException {
 		if (credit.getAmount() <= 0) {
 			throw new IllegalArgumentException("Sorry, You cannot deposit 0 or lesser");
 		}
@@ -103,9 +106,9 @@ public class TransactionService {
 		if (account == null)
 			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
 		if (!account.getCustomerId().equals(customerId))
-			throw new IllegalArgumentException(INVALID_CUSTOMER_REQUEST);
+			throw new CustomerNotMatchAccount("customer doesn't have an account with number : " + accountNumber);
 		if (!account.isActive())
-			throw new IllegalArgumentException("Account is not active");
+			throw new NotActiveException("Account is not active");
 		Transaction transaction = new Transaction();
 		transaction.setCustomerId(customerId);
 		transaction.setAccountNumber(accountNumber);
@@ -118,27 +121,26 @@ public class TransactionService {
 	}
 
 	// withdrawing money from account
-	public Transaction withdrawal(String customerId, String accountNumber, CreditDebit debit){
+	public Transaction withdrawal(String customerId, String accountNumber, CreditDebit debit)
+			throws NotActiveException, CustomerNotMatchAccount{
+		if (debit.getAmount() <= 0) {
+			throw new IllegalArgumentException("Sorry, You cannot withdraw 0 or lesser");
+		}
 		util.validateCustomer(customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
 		if (account == null)
 			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
 		if (!account.getCustomerId().equals(customerId))
-			throw new IllegalArgumentException(INVALID_CUSTOMER_REQUEST);
+			throw new CustomerNotMatchAccount("customer doesn't have an account with number : " + accountNumber);
 		if (!account.isActive())
-			throw new IllegalArgumentException("Account is not active");
-		if(account.getAccountBalance() <= 0)
-			throw new IllegalArgumentException("Insufficient Account Balance");
-		if (debit.getAmount() <= 0) {
-			throw new IllegalArgumentException("Sorry, You cannot withdraw 0 or lesser");
-		}
+			throw new NotActiveException("Account is not active");
 		Transaction transaction = new Transaction();
 		transaction.setCustomerId(customerId);
 		transaction.setAccountNumber(accountNumber);
 		transaction.setAmount(debit.getAmount());
 		transaction.setType(TransactionType.WITHDRAW);
 		transactionRepo.save(transaction);
-		account.setAccountBalance(account.getAccountBalance() - transaction.getAmount());
+		account.setAccountBalance(account.getAccountBalance() + transaction.getAmount());
 		accountRepo.save(account);
 		return transaction;
 	}
@@ -146,20 +148,19 @@ public class TransactionService {
 	// transfer money from one account to another using account number
 	public List<Transaction> moneyTransfer(String customerId, String accountNumber, MoneyTransfer transferObj)
 			throws Exception {
-		if(transferObj.getAmount() <= 0)
-			throw new IllegalArgumentException("Cannot transfer amount 0 or lesser");
+		// list for storing transactions at sender and receiver sides
 		util.validateCustomer(customerId);
+		List<Transaction> transactionsList = new ArrayList<>();
 		// checking for valid sender account
 		Account sendingAccount = accountRepo.findByAccountNumber(accountNumber);
 		if (!sendingAccount.isActive())
-			throw new IllegalArgumentException("Sender account is not active");
+			throw new NotActiveException("Sender account is not active");
 		log.info("account id of sender is " + accountNumber);
 		// checking for valid reciever account
 		Account receiverAccount = accountRepo.findByAccountNumber(transferObj.getReceiver());
 		if (!receiverAccount.isActive())
-			throw new IllegalArgumentException("Receiver account is not active");
+			throw new NotActiveException("Receiver account is not active");
 		log.info("account number of receiver is " + transferObj.getReceiver());
-		List<Transaction> transactionsList = new ArrayList<>();
 		// transaction at sender
 		Transaction transactionAtSender = new Transaction();
 		double amount = transferObj.getAmount();
@@ -188,22 +189,5 @@ public class TransactionService {
 		receiverAccount.setAccountBalance(balanceAfterCredit);
 		accountRepo.save(receiverAccount);
 		return transactionsList;
-	}
-	
-	public String deleteByAccountNumber(String customerId, String accountNumber) throws CustomerNotMatchAccount {
-		util.validateCustomer(customerId);
-		Account account = accountRepo.findByAccountNumber(accountNumber);
-		if (account == null)
-			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
-		if (!account.getCustomerId().equals(customerId))
-			throw new CustomerNotMatchAccount(INVALID_CUSTOMER_REQUEST);
-		List<Transaction> allTransactions = transactionRepo.findAll();
-		for(Transaction t : allTransactions) {
-			if(t.getAccountNumber().equals(accountNumber)) {
-				String id = t.getId();
-				transactionRepo.deleteById(id);
-			}
-		}
-		return "Deleted Successfully";
 	}
 }
