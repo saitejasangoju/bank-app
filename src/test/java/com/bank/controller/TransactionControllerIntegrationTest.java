@@ -38,36 +38,36 @@ class TransactionControllerIntegrationTest {
 	@Autowired
 	private TransactionRepository transactionRepo;
 
-	private String cid = "665224040112";
-	private String aid = "315346735831";
+	private String cid = "713414165780";
+	private String aid = "465686742353";
 	private String tid = "";
 
 	@Test
 	@Order(1)
 	void depositTest() throws Exception {
-		CreditDebit deposit = new CreditDebit(23000.0);
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
 		String content = objectMapper.writeValueAsString(deposit);
 		mockMvc.perform(
 				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
 						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(23000.0)));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
 	}
 
 	@Test
 	@Order(2)
 	void withdrawalTest() throws Exception {
-		CreditDebit withdraw = new CreditDebit(21000);
+		CreditDebit withdraw = CreditDebit.builder().amount(23000.0).build();
 		String content = objectMapper.writeValueAsString(withdraw);
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/withdrawal").content(content)
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.amount", is(21000.0)));
-	}
+				.andExpect(jsonPath("$.amount", is(23000.0)));
+	} 
 
 	@Test
 	@Order(3)
-	void transferTest() throws Exception {
-		MoneyTransfer transfer = new MoneyTransfer(3200.0, "315346735831");
+	void transferTest1() throws Exception {
+		MoneyTransfer transfer = MoneyTransfer.builder().amount(3200.0).receiver("338111880756").build();
 		String content = objectMapper.writeValueAsString(transfer);
 		mockMvc.perform(
 				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/transfer")
@@ -82,16 +82,16 @@ class TransactionControllerIntegrationTest {
 				MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/recent")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$[*].amount").value(Matchers.contains(23000.0, 21000.0, 3200.0, 3200.0)));
+				.andExpect(jsonPath("$[*].amount").value(Matchers.contains(21000.0, 23000.0, 3200.0)));
 	}
 
 	@Test
 	@Order(5)
-	void getByAccountNumber() throws Exception {
+	void getListTransactions() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$[*].accountNumber")
-						.value(Matchers.contains("315346735831", "315346735831", "315346735831", "315346735831")));
+				.andExpect(jsonPath("$[*].amount")
+						.value(Matchers.contains(21000.0, 23000.0, 3200.0)));
 
 	}
 
@@ -99,21 +99,120 @@ class TransactionControllerIntegrationTest {
 	@Order(6)
 	void getByIdTest() throws Exception {
 		List<Transaction> list = transactionRepo.findByAccountNumber(aid);
-		Transaction trans;
-		trans = list.get(list.size() - 1);
-		tid = trans.getId();
+		Transaction transaction = list.get(list.size() - 1);
+		tid = transaction.getId();
 		System.out.println(tid);
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/" + tid)
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.customerId", is("665224040112")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.customerId", is("713414165780")));
+	}
+	
+	@Test
+	@Order(7)
+	void depositTest2() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	@Test
+	@Order(8)
+	void depositTest3() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	@Test
+	@Order(9)
+	void depositTest4() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	@Test
+	@Order(10)
+	void depositTest5() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	@Test
+	@Order(11)
+	void depositTest6() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	@Test
+	@Order(12)
+	void depositTest7() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	@Test
+	@Order(12)
+	void depositTest8() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	@Test
+	@Order(13)
+	void depositTest9() throws Exception {
+		CreditDebit deposit = CreditDebit.builder().amount(21000.0).build();
+		String content = objectMapper.writeValueAsString(deposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit")
+						.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.amount", is(21000.0)));
+	}
+	
+	@Test
+	@Order(14)
+	void getRecentAbove10Test() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/recent")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[*].amount").value(Matchers.contains(23000.0, 3200.0, 21000.0, 21000.0, 21000.0, 21000.0, 21000.0, 21000.0, 21000.0, 21000.0)));
 	}
 
 	@Test
-	@Order(7)
-	void deleteByAccountNumberTest() throws Exception {
+	@Order(15)
+	void deleteByAccountNumber1Test() throws Exception {
 		mockMvc.perform(
 				MockMvcRequestBuilders.delete("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/delete")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	@Order(16)
+	void deleteByAccountNumber2Test() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/customers/561778824517/accounts/338111880756/transactions/delete")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}

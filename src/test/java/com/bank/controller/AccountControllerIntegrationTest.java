@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.List;
+
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -36,14 +38,15 @@ class AccountControllerIntegrationTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String cid = "528826860024";
+	private String cid = "561778824517";
 	private String aid = "";
-
+	private AccountDto dtoAccount;
+	
 	@Test
 	@Order(1)
 	void createTest() throws Exception {
-		AccountDto account = new AccountDto(cid, "CURRENT", "SBI21315", 65000.0);
-		String content = objectMapper.writeValueAsString(account);
+		dtoAccount = AccountDto.builder().customerId(cid).ifscCode("SBI21315").type("CURRENT").accountBalance(65000.0).build();
+		String content = objectMapper.writeValueAsString(dtoAccount);
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts")
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(content))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.accountBalance", is(65000.0)));
@@ -54,7 +57,7 @@ class AccountControllerIntegrationTest {
 	void listTest() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$[2].accountBalance", is(65000.0)));
+				.andExpect(jsonPath("$[1].accountBalance", is(65000.0)));
 	}
 
 	@Test

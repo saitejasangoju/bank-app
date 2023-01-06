@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.bank.entity.Account;
 import com.bank.entity.AccountType;
+import com.bank.entity.Address;
 import com.bank.entity.Customer;
 import com.bank.repository.AccountRepository;
 import com.bank.repository.CustomerRepository;
@@ -42,14 +43,11 @@ class AccountControllerTest {
 	@MockBean
 	private CustomerRepository customerRepository;
 	
-	Customer customer1 = new Customer("731163625713", "teja", "2002-10-20", "9283773654", "teja@gmail.com", "987678098076",
-			null);
-
-	Account account1 = new Account("63aae0328a1acb3d34d568f5", "731163625713", "3714762657302", AccountType.SAVING, "SBI21315",
-			25000.0, true);
-	Account account2 = new Account("63aae0328a1acb3d34d679f6", "731163625713", "9814762657301", AccountType.SALARY, "SBI21315",
-			35000.0, false);
-
+	Address address = Address.builder().city("hyd").houseNumber("56/7").pincode("456543").state("ts").build();
+	Customer customer1 = Customer.builder().customerId("731163625713").name("teja").dob("2002-10-20").phone("9283773654").email("teja@gmail.com").aadhar("987678098076").address(address).build();
+	Account account1 = Account.builder().aid("63aae0328a1acb3d34d568f5").customerId("731163625713").accountNumber("3714762657302").type(AccountType.SAVING).ifscCode("SBI21315").accountBalance(35000.0).active(true).build();
+	Account account2 = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713").accountNumber("9814762657301").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0).active(false).build();
+	
 	@Test
 	void listTest() throws Exception {
 		List<Account> list = Arrays.asList(account1, account2);
@@ -72,6 +70,19 @@ class AccountControllerTest {
 	}
 
 	@Test
+	void activateTest() throws Exception {
+		Account updatedAccount = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713").accountNumber("9814762657301").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0).active(true).build();
+		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
+		Mockito.when(accountRepository.findByAccountNumber("9814762657301")).thenReturn(account2);
+		Mockito.when(accountRepository.save(updatedAccount)).thenReturn(updatedAccount);
+		String content = objectMapper.writeValueAsString(updatedAccount);
+		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
+				.put("/api/v1/customers/731163625713/accounts/9814762657301/activate")
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(content);
+		mockMvc.perform(mockRequest).andExpect(status().isOk()).andExpect(jsonPath("$.active", is(true)));
+	}
+	
+	@Test
 	void createTest() throws Exception {
 		Mockito.when(accountRepository.save(account1)).thenReturn(account1);
 		String content = objectMapper.writeValueAsString(account1);
@@ -90,24 +101,11 @@ class AccountControllerTest {
 				.andExpect(status().isOk());
 	}
 
-	@Test
-	void activateTest() throws Exception {
-		Account updatedAccount = new Account("63aae0328a1acb3d34d679f6", "731163625713", "9814762657301", AccountType.SALARY,
-				"SBI21315", 35000, true);
-		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Mockito.when(accountRepository.findByAccountNumber("9814762657301")).thenReturn(account2);
-		Mockito.when(accountRepository.save(updatedAccount)).thenReturn(updatedAccount);
-		String content = objectMapper.writeValueAsString(updatedAccount);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.put("/api/v1/customers/731163625713/accounts/9814762657301/activate")
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(content);
-		mockMvc.perform(mockRequest).andExpect(status().isOk()).andExpect(jsonPath("$.active", is(true)));
-	}
+	
 	
 	@Test
 	void deActivateTest() throws Exception {
-		Account updatedAccount = new Account("63aae0328a1acb3d34d679f6", "731163625713", "3714762657302", AccountType.SALARY,
-				"SBI21315", 35000, false);
+		Account updatedAccount = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713").accountNumber("3714762657302").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0).active(false).build();
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account1);
 		Mockito.when(accountRepository.save(updatedAccount)).thenReturn(updatedAccount);
@@ -121,8 +119,7 @@ class AccountControllerTest {
 	//customer id and account number invalid
 	@Test
 	void InvalidCustomerIdDeActivateTest() throws Exception {
-		Customer customer = new Customer("888163625713", "teja", "2002-10-20", "9283773654", "teja@gmail.com",
-				"987678098076", null);
+		Customer customer = Customer.builder().customerId("888163625713").name("teja").dob("2002-10-20").phone("9283773654").email("teja@gmail.com").aadhar("987678098076").address(address).build();
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
 		Mockito.when(customerRepository.findById("888163625713")).thenReturn(Optional.of(customer));
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account1);
@@ -136,8 +133,7 @@ class AccountControllerTest {
 	//customer id and account number invalid
 	@Test
 	void InvalidCustomerIdActivateTest() throws Exception {
-		Customer customer = new Customer("888163625713", "teja", "2002-10-20", "9283773654", "teja@gmail.com",
-				"987678098076", null);
+		Customer customer = Customer.builder().customerId("888163625713").name("teja").dob("2002-10-20").phone("9283773654").email("teja@gmail.com").aadhar("987678098076").address(address).build();
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
 		Mockito.when(customerRepository.findById("888163625713")).thenReturn(Optional.of(customer));
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account1);
@@ -179,8 +175,7 @@ class AccountControllerTest {
 	@Test
 	void notActiveAccount() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = new Account("63aae0328a1acb3d34d679f6", "731163625713", "3714762657302", AccountType.SALARY,
-				"SBI21315", 35000, false);
+		Account account = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713").accountNumber("3714762657302").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0).active(false).build();
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account);
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/v1/customers/731163625713/accounts/3714762657302").contentType(MediaType.APPLICATION_JSON))
@@ -191,8 +186,7 @@ class AccountControllerTest {
 	@Test
 	void activateAccount() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = new Account("63aae0328a1acb3d34d679f6", "731163625713", "3714762657302", AccountType.SALARY,
-				"SBI21315", 35000, true);
+		Account account = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713").accountNumber("3714762657302").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0).active(true).build();
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account);
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/api/v1/customers/731163625713/accounts/3714762657302/activate").contentType(MediaType.APPLICATION_JSON))
@@ -203,8 +197,7 @@ class AccountControllerTest {
 	@Test
 	void deActivateAccount() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = new Account("63aae0328a1acb3d34d679f6", "731163625713", "3714762657302", AccountType.SALARY,
-				"SBI21315", 35000, false);
+		Account account = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713").accountNumber("3714762657302").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0).active(false).build();
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account);
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/api/v1/customers/731163625713/accounts/3714762657302/deactivate").contentType(MediaType.APPLICATION_JSON))
@@ -217,8 +210,7 @@ class AccountControllerTest {
 	@Test
 	void deleteAccount() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = new Account("63aae0328a1acb3d34d679f6", "931163625713", "3714762657302", AccountType.SALARY,
-				"SBI21315", 35000, true);
+		Account account = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("931163625713").accountNumber("3714762657302").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0).active(true).build();
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account);
 		mockMvc.perform(MockMvcRequestBuilders
 				.delete("/api/v1/customers/731163625713/accounts/3714762657302").contentType(MediaType.APPLICATION_JSON))
@@ -229,18 +221,15 @@ class AccountControllerTest {
 	@Test 
 	void listAccounts() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = new Account("63aae0328a1acb3d34d679f6", "931163625713", "3714762657302", AccountType.SALARY,
-				"SBI21315", 35000, true);
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/v1/customers/831163625713/accounts").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
 	}
 	
+	// wrong customer id
 	@Test
 	void createAccount() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = new Account("63aae0328a1acb3d34d679f6", "931163625713", "3714762657302", AccountType.SALARY,
-				"SBI21315", 35000, true);
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/api/v1/customers/831163625713/accounts").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
