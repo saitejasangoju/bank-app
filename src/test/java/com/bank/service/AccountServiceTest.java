@@ -42,7 +42,7 @@ public class AccountServiceTest {
 	Account account2 = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713")
 			.accountNumber("9814762657301").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0)
 			.active(false).build();
-
+	
 	@Test
 	void testCreateAccount() throws Exception {
 		Mockito.when(accountService.create(account1)).thenReturn(account1);

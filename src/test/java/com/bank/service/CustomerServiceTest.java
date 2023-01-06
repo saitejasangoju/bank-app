@@ -1,25 +1,29 @@
 package com.bank.service;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import com.bank.dto.CustomerDto;
 import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
+import com.bank.exception.AgeNotSatisfiedException;
 import com.bank.repository.CustomerRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,6 +50,48 @@ public class CustomerServiceTest {
 		assertEquals("sai@gmail.com", customer.getEmail());
 	}
 
+	@Test 
+	void testWithInvalidAge() throws Exception {
+		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+				.address(address).build();
+		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
+		assertThrows(AgeNotSatisfiedException.class, () -> {customerService.create(customer);});
+		
+		
+	}
+	
+
+	@Test 
+	void testAadharStartWith0() throws Exception {
+		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2001-11-05").phone("8987773654").email("sai@gmail.com").aadhar("079678098076")
+				.address(address).build();
+		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
+		assertThrows(IllegalArgumentException.class, () -> {customerService.create(customer);});
+		
+		
+	}
+	
+	@Test 
+	void testWithNullCustomerForGetByCustomerIdAndAccountNumberAndName() throws Exception {
+		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+				.address(address).build();
+		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
+		assertThrows(NoSuchElementException.class, () -> {customerService.getByCustomerIdAndAadharAndName("1345676543213", "179678098076", "teja");});
+		
+		
+	}
+	
+	@Test 
+	void testWithNullCustomerForGetByCustomerIdOrAccountNumber() throws Exception {
+		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+				.address(address).build();
+		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
+		assertThrows(NoSuchElementException.class, () -> {customerService.getByCustomerIdOrAadhar("1345676543213", "179678098076");});
+		
+		
+	}
+	
+	
 	@Test
 	void testUpdateCustomer() throws Exception {
 		Mockito.when(customerRepository.findById("1234535672134")).thenReturn(Optional.of(customer2));
@@ -84,6 +130,8 @@ public class CustomerServiceTest {
 		Customer customer = customerService.getByCustomerIdAndAadharAndName("1234535672134", "879678098076", "sai");
 		assertEquals("sai", customer.getName());
 	}
+	
+	
 	
 
 	
