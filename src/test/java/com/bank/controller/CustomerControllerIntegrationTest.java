@@ -1,6 +1,7 @@
 package com.bank.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.List;
@@ -35,22 +36,22 @@ class CustomerControllerIntegrationTest {
 	@Autowired
 	private CustomerRepository customerRepository;
 
-	@Autowired 
+	@Autowired
 	private MockMvc mockMvc;
 
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	private String cid = "";
 	private CustomerDto customer;
 	private Address address;
 
 	@Test
 	@Order(1)
-	void createTest() throws Exception {
+	void testCreateCustomer() throws Exception {
 		address = Address.builder().city("hyd").houseNumber("23-8").pincode("989898").state("ts").build();
-		customer = CustomerDto.builder().name("sandeep").dob("2000-04-26").aadhar("451235886543").email("sandeep@gmail.com")
-				.phone("8883773654").address(address).build();
+		customer = CustomerDto.builder().name("sandeep").dob("2000-04-26").aadhar("451235886543")
+				.email("sandeep@gmail.com").phone("8883773654").address(address).build();
 		String content = objectMapper.writeValueAsString(customer);
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers").accept(MediaType.APPLICATION_JSON)
 				.content(content).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
@@ -59,21 +60,22 @@ class CustomerControllerIntegrationTest {
 
 	@Test
 	@Order(2)
-	void updateTest() throws Exception {
+	void testUpdateCustomer() throws Exception {
 		address = Address.builder().city("chennai").state("tamilnadu").pincode("987543").houseNumber("98/7").build();
-		CustomerUpdateDto updatedCustomer = CustomerUpdateDto.builder().address(address).email("sangoju@gmail.com").phone("9010572614").address(address).build();
+		CustomerUpdateDto updatedCustomer = CustomerUpdateDto.builder().address(address).email("sangoju@gmail.com")
+				.phone("9010572614").address(address).build();
 		String content = objectMapper.writeValueAsString(updatedCustomer);
 		List<Customer> list = customerRepository.findAll();
 		Customer customer = list.get(list.size() - 1);
 		cid = customer.getCustomerId();
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/"+cid).accept(MediaType.APPLICATION_JSON)
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/" + cid).accept(MediaType.APPLICATION_JSON)
 				.content(content).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isAccepted())
 				.andExpect(jsonPath("$.email", is("sangoju@gmail.com")));
 	}
 
 	@Test
 	@Order(3)
-	void listTest() throws Exception {
+	void testListCustomers() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers").accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$[2].phone", is("9010572614")));
@@ -82,7 +84,75 @@ class CustomerControllerIntegrationTest {
 
 	@Test
 	@Order(4)
-	void deleteTest() throws Exception {
+	void testWIthInvalidAadharNumber() throws Exception {
+		address = Address.builder().city("hyd").houseNumber("23-8").pincode("989898").state("ts").build();
+		customer = CustomerDto.builder().name("sandeep").dob("2000-04-26").aadhar("051235886543")
+				.email("sandeep@gmail.com").phone("8883773654").address(address).build();
+		String content = objectMapper.writeValueAsString(customer);
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers").accept(MediaType.APPLICATION_JSON)
+				.content(content).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(4)
+	void testWithExistingAadhar() throws Exception {
+		Customer aadharAlreadyExist = Customer.builder().name("teja").dob("2002-11-05").phone("9283773654")
+				.email("teja@gmail.com").aadhar("451235886543").address(address).build();
+		String content = objectMapper.writeValueAsString(aadharAlreadyExist);
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers").content(content)
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message", is("Aadhar Number is already exist.")));
+	}
+	
+	@Test
+	@Order(5)
+	void testWithInvalidName() throws Exception {
+		Customer invalidName = Customer.builder().name("te").dob("2002-11-05").phone("9283773654").email("teja@gmail.com").aadhar("899343758322")
+				.address(address).build();
+		String content = objectMapper.writeValueAsString(invalidName);
+		mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(406));
+	}
+	
+	@Test
+	@Order(6)
+	void testWithInvalidPinCode() throws Exception {
+		Address address1 = Address.builder().houseNumber("34-2").city("hyd").state("ts").pincode("32497").build();
+		Customer invalidPinCode = Customer.builder().name("teja").dob("2002-11-05").phone("9283773654").email("teja@gmail.com").aadhar("899343758322")
+				.address(address1).build();
+		String content = objectMapper.writeValueAsString(invalidPinCode);
+		mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(406));
+	}
+
+	@Test
+	@Order(7)
+	void tsetWithInvalidPhoneNumber() throws Exception {
+		Customer invalidPhoneNumber = Customer.builder().name("teja").dob("2002-11-05").phone("283773654").email("teja@gmail.com").aadhar("899343758322")
+				.address(address).build();
+		String content = objectMapper.writeValueAsString(invalidPhoneNumber);
+		mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(406));
+	}
+	
+	@Test
+	@Order(8)
+	void testWithInvalidEmail() throws Exception {
+		Customer invalidEmail = Customer.builder().name("teja").dob("2002-11-05").phone("283773654").email("tejagmail.com").aadhar("899343758322")
+				.address(address).build();
+		String content = objectMapper.writeValueAsString(invalidEmail);
+		mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().is(406));
+	}
+	
+	@Test
+	@Order(9)
+	void testDeleteCustomer() throws Exception {
 		List<Customer> list = customerRepository.findAll();
 		Customer customer = list.get(list.size() - 1);
 		cid = customer.getCustomerId();

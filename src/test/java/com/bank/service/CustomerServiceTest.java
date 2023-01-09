@@ -38,7 +38,7 @@ public class CustomerServiceTest {
 	Address address = Address.builder().city("hyd").houseNumber("23-8").pincode("989898").state("ts").build();
 	CustomerDto customer1Dto = CustomerDto.builder().name("teja").dob("2000-04-26").phone("9283773654").email("teja@gmail.com").aadhar("987678098076")
 			.address(address).build();
-	Customer customer2 = Customer.builder().name("sai").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+	Customer customer2 = Customer.builder().name("saiteja").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
 			.address(address).build();
 	CustomerUpdateDto customerUpdateDto = CustomerUpdateDto.builder().email("teja@gmail.com").phone("9283773654").address(address).build();
 
@@ -52,7 +52,7 @@ public class CustomerServiceTest {
 
 	@Test 
 	void testWithInvalidAge() throws Exception {
-		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+		Customer customer = Customer.builder().customerId("4345676543213").name("saiteja").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
 		assertThrows(AgeNotSatisfiedException.class, () -> {customerService.create(customer);});
@@ -63,7 +63,7 @@ public class CustomerServiceTest {
 
 	@Test 
 	void testAadharStartWith0() throws Exception {
-		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2001-11-05").phone("8987773654").email("sai@gmail.com").aadhar("079678098076")
+		Customer customer = Customer.builder().customerId("4345676543213").name("saiteja").dob("2001-11-05").phone("8987773654").email("sai@gmail.com").aadhar("079678098076")
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
 		assertThrows(IllegalArgumentException.class, () -> {customerService.create(customer);});
@@ -73,7 +73,7 @@ public class CustomerServiceTest {
 	
 	@Test 
 	void testWithNullCustomerForGetByCustomerIdAndAccountNumberAndName() throws Exception {
-		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+		Customer customer = Customer.builder().customerId("4345676543213").name("saiteja").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
 		assertThrows(NoSuchElementException.class, () -> {customerService.getByCustomerIdAndAadharAndName("1345676543213", "179678098076", "teja");});
@@ -83,7 +83,7 @@ public class CustomerServiceTest {
 	
 	@Test 
 	void testWithNullCustomerForGetByCustomerIdOrAccountNumber() throws Exception {
-		Customer customer = Customer.builder().customerId("4345676543213").name("sai").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+		Customer customer = Customer.builder().customerId("4345676543213").name("saiteja").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
 		assertThrows(NoSuchElementException.class, () -> {customerService.getByCustomerIdOrAadhar("1345676543213", "179678098076");});
@@ -101,7 +101,7 @@ public class CustomerServiceTest {
 	
 	@Test
 	void testListCustomer() throws Exception {
-		Customer customer1 = Customer.builder().name("sai").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+		Customer customer1 = Customer.builder().name("saiteja").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
 				.address(address).build();
 		List<Customer> customer = new ArrayList<>();
 		customer.add(customer1);
@@ -114,7 +114,7 @@ public class CustomerServiceTest {
 	void testDeleteCustomer() throws Exception {
 		Mockito.when(customerRepository.findById("1234535672134")).thenReturn(Optional.of(customer2));
 		Customer customer = customerService.delete("1234535672134");
-		assertEquals("sai", customer.getName());
+		assertEquals("saiteja", customer.getName());
 	}
 	
 	@Test
@@ -126,14 +126,9 @@ public class CustomerServiceTest {
 	
 	@Test
 	void testGetCustomerIdAndAadharAndName() throws Exception {
-		Mockito.when(customerRepository.findByCustomerIdAndAadharAndName("1234535672134", "879678098076", "sai")).thenReturn(customer2);
-		Customer customer = customerService.getByCustomerIdAndAadharAndName("1234535672134", "879678098076", "sai");
-		assertEquals("sai", customer.getName());
+		Mockito.when(customerRepository.findByCustomerIdAndAadharAndName("1234535672134", "879678098076", "saiteja")).thenReturn(customer2);
+		Customer customer = customerService.getByCustomerIdAndAadharAndName("1234535672134", "879678098076", "saiteja");
+		assertEquals("saiteja", customer.getName());
 	}
-	
-	
-	
-
-	
 	
 }	

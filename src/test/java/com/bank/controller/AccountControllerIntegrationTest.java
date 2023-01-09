@@ -38,14 +38,15 @@ class AccountControllerIntegrationTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String cid = "561778824517";
-	private String aid = "";
+	private String cid = "821810274100";
+	private static String aid = "";
 	private AccountDto dtoAccount;
-	
+
 	@Test
 	@Order(1)
 	void createTest() throws Exception {
-		dtoAccount = AccountDto.builder().customerId(cid).ifscCode("SBI21315").type("CURRENT").accountBalance(65000.0).build();
+		dtoAccount = AccountDto.builder().customerId(cid).ifscCode("SBI21315").type("CURRENT").accountBalance(65000.0)
+				.build();
 		String content = objectMapper.writeValueAsString(dtoAccount);
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts")
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(content))
@@ -74,26 +75,99 @@ class AccountControllerIntegrationTest {
 	@Test
 	@Order(4)
 	void deActivateTest() throws Exception {
-		List<Account> list = accountRepository.findAll();
-		Account account;
-		account = list.get(list.size() - 1);
-		aid = account.getAccountNumber();
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/" + cid + "/accounts/" + aid + "/deactivate"))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.active", is(false)));
 	}
-
+	
 	@Test
 	@Order(5)
+	void deActivateAccount() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.put("/api/v1/customers/" + cid + "/accounts/" + aid + "/deactivate").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@Order(6)
+	void notActiveAccount() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/v1/customers/" +cid+ "/accounts/" + aid).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(7)
 	void ativateTest() throws Exception {
-		List<Account> list = accountRepository.findAll();
-		Account account = list.get(list.size() - 1);
-		aid = account.getAccountNumber();
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/" + cid + "/accounts/" + aid + "/activate"))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.active", is(true)));
 	}
 
 	@Test
-	@Order(6)
+	@Order(8)
+	void InvalidCustomerIdDeActivateTest() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/888163625713/accounts/" + aid + "/deactivate")
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(9)
+	void InvalidCustomerIdActivateTest() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/888163625713/accounts/" + aid + "/activate")
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(10)
+	void nullAccountActivateTest() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/" + cid + "/accounts/3714762657302/activate")
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(11)
+	void nullAccountDeActivateTest() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/" + cid + "/accounts/3714762657302/deactivate")
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@Order(12)
+	void activateAccountWhichAlreadyActive() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.put("/api/v1/customers/" + cid + "/accounts/" + aid + "/activate").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(13)
+	void deleteAccountWithInvalidCustomerId() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.delete("/api/v1/customers/831163625713/accounts/" + aid).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test 
+	@Order(14)
+	void listAccountsWithInvalidCustomerId() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/v1/customers/831163625713/accounts").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@Order(15)
+	void createAccountWithInvalidCustomerId() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.post("/api/v1/customers/831163625713/accounts").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@Order(16)
 	void deleteTest() throws Exception {
 		List<Account> list = accountRepository.findAll();
 		Account account = list.get(list.size() - 1);

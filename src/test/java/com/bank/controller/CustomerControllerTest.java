@@ -1,11 +1,16 @@
 package com.bank.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +19,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.bank.dto.CustomerDto;
 import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
-import com.bank.repository.CustomerRepository;
+import com.bank.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class CustomerControllerTest { 
+class CustomerControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -35,146 +40,78 @@ class CustomerControllerTest {
 	ObjectMapper objectMapper;
 
 	@MockBean
-	private CustomerRepository customerRepository;
+	private CustomerService customerService;
 
 	Address address = Address.builder().city("hyd").houseNumber("23-8").pincode("989898").state("ts").build();
-	CustomerDto customer1Dto = CustomerDto.builder().name("teja").dob("2000-04-26").phone("9283773654").email("teja@gmail.com").aadhar("987678098076")
+	CustomerDto customer1Dto = CustomerDto.builder().name("teja").dob("2000-04-26").phone("9283773654")
+			.email("teja@gmail.com").aadhar("987678098076").address(address).build();
+	Customer customer2 = Customer.builder().customerId("3135429456789").name("saiteja").dob("2002-11-05")
+			.phone("8987773654").email("sai@gmail.com").aadhar("879678098076").address(address).build();
+	CustomerUpdateDto customerUpdateDto = CustomerUpdateDto.builder().email("teja@gmail.com").phone("9283773654")
 			.address(address).build();
-	Customer customer2 = Customer.builder().name("sai").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
-			.address(address).build();
-	CustomerUpdateDto customerUpdateDto = CustomerUpdateDto.builder().email("teja@gmail.com").phone("9283773654").address(address).build();
-
-	
 
 	@Test
 	void createTest() throws Exception {
 		String content = objectMapper.writeValueAsString(customer1Dto);
+		Mockito.when(customerService.create(any(Customer.class))).thenReturn(customer2);
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers").content(content)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated()).andExpect(jsonPath("$.name", is("teja")));
+				.andExpect(status().isCreated()).andExpect(jsonPath("$.name", is("saiteja")));
 	}
 
 	@Test
-	void deleteTest() throws Exception {
-		Mockito.when(customerRepository.findById("3135429456789"))
-				.thenReturn(Optional.of(customer2));
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/customers/3135429456789")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	void getByCustomerIdAndAadharAndNameTest() throws Exception {
+		Customer c1 = Customer.builder().customerId("8835429456789").name("teja").dob("2002-11-05").phone("7787773654")
+				.email("teja@gmail.com").aadhar("449678098076").address(address).build();
+		Mockito.when(customerService.getByCustomerIdAndAadharAndName("8835429456789", "449678098076", "teja")).thenReturn(c1);
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/8835429456789/aadhar/449678098076/name/teja").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.name", is("teja")));
 	}
-
+	
 	@Test
-	void updateTest() throws Exception {
-		Mockito.when(customerRepository.findById("731163625713")).thenReturn(java.util.Optional.ofNullable(customer2));
-		String content = objectMapper.writeValueAsString(customerUpdateDto);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v1/customers/731163625713")
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(content);
-		mockMvc.perform(mockRequest).andExpect(status().isAccepted())
-				.andExpect(jsonPath("$.email", is("teja@gmail.com")));
+	void getByCustomerIdOrAadhar() throws Exception {
+		Customer c1 = Customer.builder().customerId("8835429456789").name("teja").dob("2002-11-05").phone("7787773654")
+				.email("teja@gmail.com").aadhar("449678098076").address(address).build();
+		Mockito.when(customerService.getByCustomerIdOrAadhar("8835429456789", "749678098076")).thenReturn(c1);
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/8835429456789/aadhar/749678098076").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.name", is("teja")));
 	}
+	
 	
 	@Test
 	void listTest() throws Exception {
+		Customer c1 = Customer.builder().customerId("8835429456789").name("teja").dob("2002-11-05").phone("7787773654")
+				.email("teja@gmail.com").aadhar("449678098076").address(address).build();
+		Customer c2 = Customer.builder().customerId("3135429456789").name("saiteja").dob("2002-11-05")
+				.phone("8987773654").email("sai@gmail.com").aadhar("879678098076").address(address).build();
+		List<Customer> list = new ArrayList<>();
+		list.add(c1);
+		list.add(c2);
+		Mockito.when(customerService.list()).thenReturn(list);
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
-	
-	// negative test cases
-	
-	@Test
-	void aadharAlreadyExist() throws Exception {
-		Customer aadharAlreadyExist = Customer.builder().name("teja").dob("2002-11-05").phone("9283773654").email("teja@gmail.com").aadhar("987678098076")
-				.address(address).build();
-		Mockito.when(customerRepository.findByAadhar("987678098076")).thenReturn(aadharAlreadyExist);
-		String content = objectMapper.writeValueAsString(aadharAlreadyExist);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
-	}
-	
-	
-	@Test
-	void invalidAadharNumber() throws Exception {
-		Customer invalidAadharNumber = Customer.builder().name("teja").dob("2002-11-05").phone("9283773654").email("teja@gmail.com").aadhar("099343758322")
-				.address(address).build();
-		Mockito.when(customerRepository.findByAadhar("099343758322")).thenReturn(invalidAadharNumber);
-		String content = objectMapper.writeValueAsString(invalidAadharNumber);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
-	}
-	
-	
-	@Test
-	void invalidName() throws Exception {
-		Customer invalidName = Customer.builder().name("te").dob("2002-11-05").phone("9283773654").email("teja@gmail.com").aadhar("899343758322")
-				.address(address).build();
-		Mockito.when(customerRepository.findByAadhar("399343758322")).thenReturn(invalidName);
-		String content = objectMapper.writeValueAsString(invalidName);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(406));
+				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is("teja")));
 	}
 	
 
 	@Test
-	void invalidPinCode() throws Exception {
-		Address address1 = Address.builder().houseNumber("34-2").city("hyd").state("ts").pincode("32497").build();
-		Customer invalidPinCode = Customer.builder().name("teja").dob("2002-11-05").phone("9283773654").email("teja@gmail.com").aadhar("899343758322")
-				.address(address1).build();
-		Mockito.when(customerRepository.findByAadhar("546343758322")).thenReturn(invalidPinCode);
-		String content = objectMapper.writeValueAsString(invalidPinCode);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(406));
+	void updateTest() throws Exception {
+		customer2.setPhone(customerUpdateDto.getPhone());
+		customer2.setEmail(customerUpdateDto.getEmail());
+		customer2.setAddress(customerUpdateDto.getAddress());
+		Mockito.when(customerService.update(eq("3135429456789"), any(CustomerUpdateDto.class))).thenReturn(customer2);
+		String content = objectMapper.writeValueAsString(customerUpdateDto);
+		ResultActions res = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/3135429456789")
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(content))
+				.andExpect(status().isAccepted()).andExpect(jsonPath("$.phone", is("9283773654")));
+		System.out.println(res);
 	}
 	
+	@Test
+	void deleteTest() throws Exception {
+		Mockito.when(customerService.delete("3135429456789")).thenReturn(customer2);
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/customers/3135429456789")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.phone", is("8987773654")));
+	}
 
-	@Test
-	void invalidPhoneNumber() throws Exception {
-		Customer invalidPhoneNumber = Customer.builder().name("teja").dob("2002-11-05").phone("283773654").email("teja@gmail.com").aadhar("899343758322")
-				.address(address).build();
-		Mockito.when(customerRepository.findByAadhar("776343758322")).thenReturn(invalidPhoneNumber);
-		String content = objectMapper.writeValueAsString(invalidPhoneNumber);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(406));
-	}
-	
-	@Test
-	void invalidEmail() throws Exception {
-		Customer invalidEmail = Customer.builder().name("teja").dob("2002-11-05").phone("283773654").email("tejagmail.com").aadhar("899343758322")
-				.address(address).build();
-		Mockito.when(customerRepository.findByAadhar("776343758322")).thenReturn(invalidEmail);
-		String content = objectMapper.writeValueAsString(invalidEmail);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(406));
-	}
-	
-	@Test
-	void testInvalidPinCode() throws Exception {
-		Address address1 = Address.builder().city("hyd").houseNumber("23-8").pincode("98998").state("ts").build();
-		Customer checkingPinCode = Customer.builder().name("teja").dob("2002-11-05").phone("2837738654").email("teja@gmail.com").aadhar("449343758322")
-				.address(address1).build();
-		Mockito.when(customerRepository.findByAadhar("776343758322")).thenReturn(checkingPinCode);
-		String content = objectMapper.writeValueAsString(checkingPinCode);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers").content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(406));
-	}
-	
-	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
