@@ -8,7 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
@@ -38,13 +41,16 @@ public class Customer {
 	private String phone;
 	private String email;
 	private String aadhar;
-	@CreatedDate
-	private Date createdDate;
+//	@CreatedDate
+	@CreationTimestamp
+	private Instant createdDate;
 	@Version
 	@JsonIgnore
+	@Transient
 	private Integer version;
-	@LastModifiedDate
-	private Date updatedDate;
+//	@LastModifiedDate
+	@UpdateTimestamp
+	private Instant updatedDate;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;

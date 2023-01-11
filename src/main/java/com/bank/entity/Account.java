@@ -2,20 +2,13 @@ package com.bank.entity;
 
 import java.time.Instant;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.Valid;
-
-import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import lombok.AllArgsConstructor;
@@ -36,20 +29,18 @@ import lombok.Setter;
 public class Account {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private String aid;
-	private String customerId;
 	private String accountNumber;
-	@Enumerated(EnumType.STRING)
-	@Valid
+	private String customerId;
 	private AccountType type;
 	private String ifscCode;
 	private double accountBalance;
 	@Default
 	private boolean active = true;
- 	@CreatedDate
+// 	@CreatedDate
+	@CreationTimestamp
 	private Instant createdDate;
- 	@LastModifiedDate
+// 	@LastModifiedDate
+	@UpdateTimestamp
  	private Instant updatedDate;
  	
 }

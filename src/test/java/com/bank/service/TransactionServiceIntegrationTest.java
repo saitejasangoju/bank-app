@@ -28,8 +28,8 @@ public class TransactionServiceIntegrationTest {
 	@Autowired
 	private TransactionRepository transactionRepository;
 
-	private String cid = "821810274100";
-	private String aid = "1342120573283";
+	private static String cid = "1866526833467";
+	private static String aid = "822802303280";
 
 	@Test
 	@Order(1)
@@ -71,7 +71,7 @@ public class TransactionServiceIntegrationTest {
 	@Test
 	@Order(6)
 	void testMoneyTransfer() throws Exception {
-		MoneyTransfer transfer = MoneyTransfer.builder().amount(1200.0).receiver("124608332868").build();
+		MoneyTransfer transfer = MoneyTransfer.builder().amount(1200.0).receiver("548457423042").build();
 		List<Transaction> transactions = transactionService.moneyTransfer(cid, aid, transfer);
 		assertEquals(2, transactions.size());		
 	}
@@ -88,7 +88,7 @@ public class TransactionServiceIntegrationTest {
 	void testGetById() throws Exception {
 		List<Transaction> list = transactionRepository.findAll();
 		Transaction t = list.get(list.size() - 1);
-		String tid = t.getId();
+		Long tid = t.getId();
 		Transaction transactions = transactionService.getById(cid, aid, tid);
 		assertEquals(1200.0, transactions.getAmount());		
 	}
@@ -98,7 +98,7 @@ public class TransactionServiceIntegrationTest {
 	void testListTransactions() throws Exception {
 		List<Transaction> list = transactionRepository.findAll();
 		Transaction t = list.get(list.size() - 1);
-		String tid = t.getId();
+		Long tid = t.getId();
 		Transaction transactions = transactionService.getById(cid, aid, tid);
 		assertEquals(1200.0, transactions.getAmount());		
 	}
@@ -106,7 +106,7 @@ public class TransactionServiceIntegrationTest {
 	@Test
 	@Order(10)
 	void invalidTransactionId() throws Exception {
-		assertThrows(NoSuchElementException.class, () -> transactionService.getById(cid, aid, "42kdjakehi4hiuj3j4j"));	
+		assertThrows(NoSuchElementException.class, () -> transactionService.getById(cid, aid, 234112L));	
 	}
 	
 	@Test
@@ -135,7 +135,7 @@ public class TransactionServiceIntegrationTest {
 	@Test
 	@Order(14)
 	void testAccount2DeleteTransactions() throws Exception {
-		String deletedMessage = transactionService.deleteByAccountNumber("321428876400", "124608332868");
+		String deletedMessage = transactionService.deleteByAccountNumber(cid, "548457423042");
 		assertEquals("Deleted Successfully", deletedMessage);		
 	}
 	

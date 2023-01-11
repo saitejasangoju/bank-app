@@ -55,7 +55,7 @@ public class TransactionService {
 	}
 
 	// get transactions by id
-	public Transaction getById(String customerId, String accountNumber, String id) {
+	public Transaction getById(String customerId, String accountNumber, Long id) {
 		util.validateCustomer(customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
 		if (account == null) {
@@ -67,7 +67,7 @@ public class TransactionService {
 		return transactionRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Transaction doesn't exist"));
 	}
 
-	// getting recent transactions(2 days)
+	// getting recent transactions maximum 10
 	public List<Transaction> getRecentTransactions(String customerId, String accountNumber)
 			throws CustomerNotMatchAccount {
 		util.validateCustomer(customerId);
@@ -197,7 +197,7 @@ public class TransactionService {
 		List<Transaction> allTransactions = transactionRepo.findAll();
 		for (Transaction t : allTransactions) {
 			if (t.getAccountNumber().equals(accountNumber)) {
-				String id = t.getId();
+				Long id = t.getId();
 				transactionRepo.deleteById(id);
 			}
 		}

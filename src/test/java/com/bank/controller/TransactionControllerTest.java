@@ -48,20 +48,20 @@ class TransactionControllerTest {
 			.phone("9283773654").email("teja@gmail.com").aadhar("987678098076").address(address).build();
 	Customer customer2 = Customer.builder().customerId("731163625714").name("sai").dob("2002-10-20").phone("9883773654")
 			.email("sai@gmail.com").aadhar("777678098076").address(address).build();
-	Account account1 = Account.builder().aid("63aae0328a1acb3d34d568f5").customerId("731163625713")
-			.accountNumber("3714762657302").type(AccountType.SAVING).ifscCode("SBI21315").accountBalance(25000.0)
+	Account account1 = Account.builder().customerId("731163625713")
+			.accountNumber("3714762657302").type(AccountType.SAVINGS).ifscCode("SBI21315").accountBalance(25000.0)
 			.active(true).build();
-	Account account2 = Account.builder().aid("63aae0328a1acb3d34d568f9").customerId("731163625713")
-			.accountNumber("8714762657302").type(AccountType.SAVING).ifscCode("SBI21315").accountBalance(25000.0)
+	Account account2 = Account.builder().customerId("731163625713")
+			.accountNumber("8714762657302").type(AccountType.SAVINGS).ifscCode("SBI21315").accountBalance(25000.0)
 			.active(true).build();
-	Account account3 = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("831163625713")
+	Account account3 = Account.builder().customerId("831163625713")
 			.accountNumber("5414762657301").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0)
 			.active(false).build();
 	Instant date1 = Instant.parse("2022-12-04T17:21:18.139Z");
 	Instant date2 = Instant.parse("2022-12-03T17:21:18.139Z");
-	Transaction transaction1 = Transaction.builder().id("63ac7b0ec00a170f750646b8").customerId("731163625713")
+	Transaction transaction1 = Transaction.builder().id(2337382L).customerId("731163625713")
 			.accountNumber("3714762657302").date(date1).amount(2500.0).type(TransactionType.DEPOSIT).build();
-	Transaction transaction2 = Transaction.builder().id("63ac7b0ec00a170f750646b9").customerId("731163625713")
+	Transaction transaction2 = Transaction.builder().id(3442121L).customerId("731163625713")
 			.accountNumber("3714762657302").date(date2).amount(2700.0).type(TransactionType.WITHDRAW).build();
 
 	
@@ -119,7 +119,7 @@ class TransactionControllerTest {
 	
 	@Test
 	void getByIdTest() throws Exception {
-		Mockito.when(transactionService.getById("731163625713", "3714762657302", "63ac7b0ec00a170f750646b8")).thenReturn(transaction1);
+		Mockito.when(transactionService.getById("731163625713", "3714762657302", 2337382L)).thenReturn(transaction1);
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/v1/customers/731163625713/accounts/3714762657302/transactions/63ac7b0ec00a170f750646b8")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())

@@ -56,10 +56,7 @@ public class CustomerServiceTest {
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
 		assertThrows(AgeNotSatisfiedException.class, () -> {customerService.create(customer);});
-		
-		
 	}
-	
 
 	@Test 
 	void testAadharStartWith0() throws Exception {
@@ -67,8 +64,6 @@ public class CustomerServiceTest {
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
 		assertThrows(IllegalArgumentException.class, () -> {customerService.create(customer);});
-		
-		
 	}
 	
 	@Test 
@@ -77,8 +72,6 @@ public class CustomerServiceTest {
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
 		assertThrows(NoSuchElementException.class, () -> {customerService.getByCustomerIdAndAadharAndName("1345676543213", "179678098076", "teja");});
-		
-		
 	}
 	
 	@Test 
@@ -86,9 +79,7 @@ public class CustomerServiceTest {
 		Customer customer = Customer.builder().customerId("4345676543213").name("saiteja").dob("2009-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
 				.address(address).build();
 		Mockito.when(customerRepository.findById("4345676543213")).thenReturn(Optional.of(customer));
-		assertThrows(NoSuchElementException.class, () -> {customerService.getByCustomerIdOrAadhar("1345676543213", "179678098076");});
-		
-		
+		assertThrows(NoSuchElementException.class, () -> {customerService.getByCustomerIdOrAadhar("1345676543213", "179678098076");});	
 	}
 	
 	

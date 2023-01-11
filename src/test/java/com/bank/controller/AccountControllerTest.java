@@ -44,18 +44,18 @@ class AccountControllerTest {
 	Address address = Address.builder().city("hyd").houseNumber("56/7").pincode("456543").state("ts").build();
 	Customer customer1 = Customer.builder().customerId("731163625713").name("teja").dob("2002-10-20")
 			.phone("9283773654").email("teja@gmail.com").aadhar("987678098076").address(address).build();
-	Account account1 = Account.builder().aid("63aae0328a1acb3d34d568f5").customerId("731163625713")
+	Account account1 = Account.builder().customerId("731163625713")
 			.accountNumber("3714762657302").type(AccountType.SALARY).ifscCode("SBI21").accountBalance(35000.0)
 			.active(true).build();
-	Account account2 = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("731163625713")
+	Account account2 = Account.builder().customerId("731163625713")
 			.accountNumber("9814762657301").type(AccountType.SALARY).ifscCode("SBI21").accountBalance(35000.0)
 			.active(false).build();
 
 	@Test
 	void testCreateAccount() throws Exception {
 		AccountDto accountDto = AccountDto.builder().customerId("731163625713").accountBalance(35000.0)
-				.ifscCode("SBI21").type("SALARY").build();
-		Mockito.when(accountService.create(any(Account.class))).thenReturn(account1);
+				.ifscCode("SBI21").type(AccountType.SALARY).build();
+		Mockito.when(accountService.create(any(AccountDto.class))).thenReturn(account1);
 		String content = objectMapper.writeValueAsString(accountDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/731163625713/accounts").content(content)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())

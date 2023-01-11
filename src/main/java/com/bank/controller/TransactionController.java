@@ -33,7 +33,7 @@ public class TransactionController {
 	}
 	
 	@GetMapping("/{customerId}/accounts/{accountNumber}/transactions/{id}")
-	public Transaction getById(@PathVariable String customerId, @PathVariable String accountNumber, @PathVariable String id){
+	public Transaction getById(@PathVariable String customerId, @PathVariable String accountNumber, @PathVariable Long id){
 		return service.getById(customerId, accountNumber, id);
 	}
 	

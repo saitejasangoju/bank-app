@@ -1,13 +1,24 @@
 package com.bank.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import javax.persistence.Id;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.stereotype.Service;
+
+import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
+import com.bank.entity.AccountType;
 import com.bank.exception.CustomerNotMatchAccount;
 import com.bank.repository.AccountRepository;
+
+import lombok.Builder.Default;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -23,11 +34,13 @@ public class AccountService {
 	private AccountRepository accountRepo;
 
 	// create account
-	public Account create(Account account) {
+	public Account create(AccountDto account) {
 		util.validateCustomer(account.getCustomerId());
 		log.info(CUSTOMER_FETCHED, account.getCustomerId());
-		account.setAccountNumber(util.generateId());
-		return accountRepo.save(account);
+		Account accountObj = Account.builder().accountNumber(util.generateId()).customerId(account.getCustomerId())
+				.type(account.getType()).ifscCode(account.getIfscCode()).accountBalance(account.getAccountBalance())
+				.active(true).build();
+		return accountRepo.save(accountObj);
 	}
 	
 	// get all accounts
@@ -37,7 +50,7 @@ public class AccountService {
 		List<Account> allAccounts = accountRepo.findAll();
 		List<Account> accounts = new ArrayList<>();
 		for(Account acc : allAccounts) {
-			if(acc.getCustomerId().equals(customerId)) {
+			if(acc.getCustomerId().equals(customerId) && acc.isActive()) {
 				accounts.add(acc);
 			}
 		}

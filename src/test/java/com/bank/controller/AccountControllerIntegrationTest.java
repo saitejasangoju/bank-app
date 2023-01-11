@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.bank.BankApplication;
 import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
+import com.bank.entity.AccountType;
 import com.bank.repository.AccountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -45,7 +46,7 @@ class AccountControllerIntegrationTest {
 	@Test
 	@Order(1)
 	void createTest() throws Exception {
-		dtoAccount = AccountDto.builder().customerId(cid).ifscCode("SBI21315").type("CURRENT").accountBalance(65000.0)
+		dtoAccount = AccountDto.builder().customerId(cid).ifscCode("SBI21315").type(AccountType.CURRENT).accountBalance(65000.0)
 				.build();
 		String content = objectMapper.writeValueAsString(dtoAccount);
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts")

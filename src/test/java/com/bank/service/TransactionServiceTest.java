@@ -51,22 +51,22 @@ public class TransactionServiceTest {
 			.phone("9283773654").email("teja@gmail.com").aadhar("987678098076").address(address).build();
 	Customer customer2 = Customer.builder().customerId("731163625714").name("sai").dob("2002-10-20").phone("9883773654")
 			.email("sai@gmail.com").aadhar("777678098076").address(address).build();
-	Account account1 = Account.builder().aid("63aae0328a1acb3d34d568f5").customerId("731163625713")
-			.accountNumber("3714762657302").type(AccountType.SAVING).ifscCode("SBI21315").accountBalance(25000.0)
+	Account account1 = Account.builder().customerId("731163625713")
+			.accountNumber("3714762657302").type(AccountType.SAVINGS).ifscCode("SBI21315").accountBalance(25000.0)
 			.active(true).build();
-	Account account2 = Account.builder().aid("63aae0328a1acb3d34d568f9").customerId("881163625713")
-			.accountNumber("8714762657302").type(AccountType.SAVING).ifscCode("SBI21315").accountBalance(25000.0)
+	Account account2 = Account.builder().customerId("881163625713")
+			.accountNumber("8714762657302").type(AccountType.SAVINGS).ifscCode("SBI21315").accountBalance(25000.0)
 			.active(true).build();
-	Account account3 = Account.builder().aid("63aae0328a1acb3d34d679f6").customerId("831163625713")
+	Account account3 = Account.builder().customerId("831163625713")
 			.accountNumber("5414762657301").type(AccountType.SALARY).ifscCode("SBI21315").accountBalance(35000.0)
 			.active(false).build();
 	Instant date1 = Instant.parse("2022-12-04T17:21:18.139Z");
 	Instant date2 = Instant.parse("2022-12-03T17:21:18.139Z");
-	Transaction transaction1 = Transaction.builder().id("63ac7b0ec00a170f750646b8").customerId("731163625713")
+	Transaction transaction1 = Transaction.builder().id(22334L).customerId("731163625713")
 			.accountNumber("3714762657302").date(date1).amount(25000.0).type(TransactionType.DEPOSIT).build();
-	Transaction transaction2 = Transaction.builder().id("63ac7b0ec00a170f750646b9").customerId("731163625713")
+	Transaction transaction2 = Transaction.builder().id(43224L).customerId("731163625713")
 			.accountNumber("3714762657302").date(date2).amount(3700.0).type(TransactionType.DEPOSIT).build();
-	Transaction transaction3 = Transaction.builder().id("63ac7b0ec00a170f750646b7").customerId("881163625713")
+	Transaction transaction3 = Transaction.builder().id(87659L).customerId("881163625713")
 			.accountNumber("8714762657302").date(date2).amount(3700.0).type(TransactionType.WITHDRAW).build();
 
 	@Test
@@ -99,7 +99,7 @@ public class TransactionServiceTest {
 	@Test
 	void invalidAmountForWithdrawal() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = Account.builder().aid("3jdkjlal3u327djlh78o3").accountNumber("3714762657302").customerId("731163625713")
+		Account account = Account.builder().accountNumber("3714762657302").customerId("731163625713")
 					.accountBalance(2300.0).active(true).type(AccountType.SALARY).build();
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account);
 		CreditDebit withdraw = CreditDebit.builder().amount(0).build();
@@ -109,7 +109,7 @@ public class TransactionServiceTest {
 	@Test
 	void insufficentBalanceForWithdrawal() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
-		Account account = Account.builder().aid("3jdkjlal3u327djlh78o3").accountNumber("3714762657302").customerId("731163625713")
+		Account account = Account.builder().accountNumber("3714762657302").customerId("731163625713")
 					.accountBalance(0).active(true).type(AccountType.SALARY).build();
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account);
 		CreditDebit withdraw = CreditDebit.builder().amount(3700.0).build();
@@ -122,8 +122,8 @@ public class TransactionServiceTest {
 	void testGetById() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account1);
-		Mockito.when(transactionRepository.findById("63ac7b0ec00a170f750646b8")).thenReturn(Optional.of(transaction1));
-		Transaction transaction = transactionService.getById("731163625713", "3714762657302", "63ac7b0ec00a170f750646b8");
+		Mockito.when(transactionRepository.findById(22334L)).thenReturn(Optional.of(transaction1));
+		Transaction transaction = transactionService.getById("731163625713", "3714762657302", 22334L);
 		assertEquals(25000.0, transaction.getAmount());
 	}
 	
@@ -167,8 +167,8 @@ public class TransactionServiceTest {
 	
 	@Test
 	void insufficientAmountForTransfer() throws Exception {
-		Account senderAccount = Account.builder().aid("63aae0328a1acb3d34d568f5").customerId("731163625713")
-				.accountNumber("2214762657302").type(AccountType.SAVING).ifscCode("SBI21315").accountBalance(25000.0)
+		Account senderAccount = Account.builder().customerId("731163625713")
+				.accountNumber("2214762657302").type(AccountType.SAVINGS).ifscCode("SBI21315").accountBalance(25000.0)
 				.active(true).build();
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
 		Mockito.when(accountRepository.findByAccountNumber("2214762657302")).thenReturn(senderAccount);

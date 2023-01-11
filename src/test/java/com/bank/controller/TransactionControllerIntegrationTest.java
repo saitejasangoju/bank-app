@@ -50,7 +50,7 @@ class TransactionControllerIntegrationTest {
 
 	private static String cid = "821810274100";
 	private static String aid = "1342120573283";
-	private static String tid = "";
+	private static Long tid;
 
 	@Test
 	@Order(1)

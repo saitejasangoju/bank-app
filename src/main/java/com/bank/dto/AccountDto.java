@@ -1,5 +1,7 @@
 package com.bank.dto;
 
+import com.bank.entity.AccountType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +17,7 @@ import lombok.Setter;
 public class AccountDto {
 
 	private String customerId;
-	private String type;
+	private AccountType type;
 	private String ifscCode;
 	private double accountBalance;
 }

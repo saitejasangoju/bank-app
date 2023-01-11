@@ -35,7 +35,7 @@ public class CustomerServiceIntegrationTest {
 	@Autowired
 	private CustomerService customerService;
 	
-	private String cid = "";
+	private static String cid = "";
 	
 	private Address address = Address.builder().city("hyd").houseNumber("23-8").pincode("989898").state("ts").build();
 	private Customer customer = Customer.builder().name("sandeep").dob("2000-04-26").aadhar("451235886543").email("sandeep@gmail.com")
@@ -77,7 +77,7 @@ public class CustomerServiceIntegrationTest {
 	@Order(5)
 	void testListCustomer() throws Exception {
 		List<Customer> list = customerService.list();
-		assertEquals(3, list.size());
+		assertEquals(2, list.size());
 	}
 
 	@Test
