@@ -15,7 +15,6 @@ import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -27,10 +26,10 @@ public class CustomerDto {
 	@Size(min = 10,max = 10, message = "Invalid Phone Number")
 	private String phone;
 	private String dob;
-	@NotBlank
+	@NotBlank()
 	@Email
 	private String email;
-	@Size(min = 12, message = "Invalid Aadhar Number")
+	@Size(min = 12, max = 12, message = "Invalid Aadhar Number")
 	private String aadhar;
 	@Valid
 	private Address address;

@@ -2,6 +2,7 @@ package com.bank.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -42,6 +43,12 @@ public class CustomerController {
 		response.sendRedirect("/swagger-ui.html");
 	}
 	
+	@GetMapping("/{customerId}")
+	public ResponseEntity<Customer> getById(@PathVariable String customerId) {
+		return new ResponseEntity<>(service.getById(customerId), HttpStatus.ACCEPTED);
+	}
+	
+	
 	@GetMapping
 	public ResponseEntity<List<Customer>> list() {
 		return ResponseEntity.ok(service.list());
@@ -61,4 +68,15 @@ public class CustomerController {
 	public ResponseEntity<Customer> delete(@PathVariable String customerId) {
 		return new ResponseEntity<>(service.delete(customerId), HttpStatus.OK);
 	}
+	
+	@GetMapping("/{customerId}/aadhar/{aadhar}/name/{name}")
+	public Customer getByCustomerIdAndAadharAndName(@PathVariable String customerId, @PathVariable String aadhar, @PathVariable String name) throws NoSuchElementException {
+		return service.getByCustomerIdAndAadharAndName(customerId, aadhar, name);
+	}
+	
+	@GetMapping("/{customerId}/aadhar/{aadhar}")
+	public Customer getByCustomerIdOrAadhar(@PathVariable String customerId, @PathVariable String aadhar) throws NoSuchElementException {
+		return service.getByCustomerIdOrAadhar(customerId, aadhar);
+	}
+
 }

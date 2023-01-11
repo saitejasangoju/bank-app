@@ -130,7 +130,7 @@ class CustomerControllerIntegrationTest {
 
 	@Test
 	@Order(7)
-	void tsetWithInvalidPhoneNumber() throws Exception {
+	void testWithInvalidPhoneNumber() throws Exception {
 		Customer invalidPhoneNumber = Customer.builder().name("teja").dob("2002-11-05").phone("283773654").email("teja@gmail.com").aadhar("899343758322")
 				.address(address).build();
 		String content = objectMapper.writeValueAsString(invalidPhoneNumber);

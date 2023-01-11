@@ -38,7 +38,7 @@ public class AccountController {
 	}
 	
 	@GetMapping("/{customerId}/accounts/{accountNumber}")
-	public Account get(@PathVariable String customerId, @PathVariable String accountNumber) throws CustomerNotMatchAccount {
+	public Account get(@PathVariable String customerId, @PathVariable String accountNumber) {
 		return service.getByAccountNumber(customerId, accountNumber);
 	}
 	

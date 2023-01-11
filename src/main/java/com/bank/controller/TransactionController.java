@@ -43,7 +43,7 @@ public class TransactionController {
 	}
 	
 	@PostMapping("/{customerId}/accounts/{accountNumber}/transactions/deposit")
-	public Transaction deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit credit) throws CustomerNotMatchAccount, NotActiveException {
+	public Transaction deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit credit) throws CustomerNotMatchAccount, NotActiveException, com.bank.exception.NotActiveException {
 		return service.deposit(customerId, accountNumber, credit);
 	}
 

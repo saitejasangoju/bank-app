@@ -60,7 +60,19 @@ public class AccountServiceIntegrationTest {
 		Account getAccount = accountService.getByAccountNumber(cid, accNumber);
 		assertEquals(65000.0, getAccount.getAccountBalance());
 	}
-
+	
+	@Test
+	@Order(4)
+	void customerNotMatchAccountNumberForDeActivate() throws Exception {
+		assertThrows(IllegalArgumentException.class, () -> accountService.deactivate(cid, "124608332868"));
+	}
+	
+	@Test
+	@Order(4)
+	void customerNotMatchAccountNumberForActivate() throws Exception {
+		assertThrows(IllegalArgumentException.class, () -> accountService.activate(cid, "124608332868"));
+	}
+	
 	@Test
 	@Order(4)
 	void deActivateTest() throws Exception {

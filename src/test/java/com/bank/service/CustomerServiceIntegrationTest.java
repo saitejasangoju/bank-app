@@ -67,7 +67,7 @@ public class CustomerServiceIntegrationTest {
 	@Test
 	@Order(4)
 	void invalidCustomerAge() throws Exception {
-		Customer invalidCustomerAge =  Customer.builder().name("sandeep").dob("2009-04-26").aadhar("051235886543").email("sandeep@gmail.com")
+		Customer invalidCustomerAge =  Customer.builder().name("sandeep").dob("2009-04-26").aadhar("451235886543").email("sandeep@gmail.com")
 				.phone("8883773654").address(address).build();
 		assertThrows(AgeNotSatisfiedException.class, () -> customerService.create(invalidCustomerAge));
 	}
@@ -115,6 +115,13 @@ public class CustomerServiceIntegrationTest {
 	@Order(10)
 	void invalidCustomerIdOrAadhar() throws Exception {
 		assertThrows(NoSuchElementException.class, () -> customerService.getByCustomerIdOrAadhar("43633738766532", "8374738672367"));
+	}
+	
+	@Test
+	@Order(11)
+	void testGetById() throws Exception {
+		Customer customer = customerService.getById(cid);
+		assertEquals("sandeep", customer.getName());
 	}
 	
 	@Test

@@ -1,4 +1,4 @@
-package com.bank.util;
+package com.bank.service;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -23,7 +23,7 @@ public class Utility {
 	}
 
 	// generating random number
-	public String generateAccountNumber() {
+	public String generateId() {
 		Random random = new Random();
 		StringBuilder randomStr = new StringBuilder();
 		for (int i = 1; i <= 13; i++) {

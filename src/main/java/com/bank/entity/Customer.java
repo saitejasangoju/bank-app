@@ -1,17 +1,36 @@
 package com.bank.entity;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import java.sql.Date;
+import java.time.Instant;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection="customer")
+@Builder
+//@Document(collection="customer")
+@Entity
+@Table(name = "customer")
 public class Customer {
+	
 	@Id
 	private String customerId;
 	private String name;
@@ -19,5 +38,15 @@ public class Customer {
 	private String phone;
 	private String email;
 	private String aadhar;
+	@CreatedDate
+	private Date createdDate;
+	@Version
+	@JsonIgnore
+	private Integer version;
+	@LastModifiedDate
+	private Date updatedDate;
+	
+	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;
+
 }
