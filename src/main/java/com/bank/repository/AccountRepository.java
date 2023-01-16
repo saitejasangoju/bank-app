@@ -1,18 +1,20 @@
 package com.bank.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
 import com.bank.entity.Account;
 
+public interface AccountRepository{
+	
+	Account save(Account account);
+	List<Account> findAll();
+	void delete(Account account);
+	
+	Account findByAccountNumber(String accountNumber);
+}
+
 //@Repository
-//public interface AccountRepository extends MongoRepository<Account, String>{
+//public interface AccountRepository extends JpaRepository<Account, String>{
 //
 //	Account findByAccountNumber(String accountNumber);
 //}
-
-@Repository
-public interface AccountRepository extends JpaRepository<Account, String>{
-
-	Account findByAccountNumber(String accountNumber);
-}

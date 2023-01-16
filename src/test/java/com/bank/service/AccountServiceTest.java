@@ -19,7 +19,7 @@ import com.bank.entity.AccountType;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
 import com.bank.repository.AccountRepository;
-import com.bank.repository.CustomerRepository;
+import com.bank.repository.CustomerRepositoryMongo;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,7 +29,7 @@ public class AccountServiceTest {
 	private AccountService accountService;
 
 	@MockBean
-	private CustomerRepository customerRepository;
+	private CustomerRepositoryMongo customerRepository;
 
 	@MockBean
 	private AccountRepository accountRepository;

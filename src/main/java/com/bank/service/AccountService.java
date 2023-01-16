@@ -1,24 +1,17 @@
 package com.bank.service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.persistence.Id;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.stereotype.Service;
 
 import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
-import com.bank.entity.AccountType;
 import com.bank.exception.CustomerNotMatchAccount;
 import com.bank.repository.AccountRepository;
 
-import lombok.Builder.Default;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -27,6 +20,7 @@ public class AccountService {
 	
 	private static final String INVALID_ACCOUNT_NUMBER = "Account doesn't exist";
 	private static final String CUSTOMER_FETCHED = "Customer fetched of id : {} ";
+	
 	@Autowired
 	private Utility util;
 	

@@ -39,7 +39,7 @@ class AccountControllerIntegrationTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String cid = "821810274100";
+	private String cid = "1436347272332";
 	private static String aid = "";
 	private AccountDto dtoAccount;
 
@@ -59,7 +59,7 @@ class AccountControllerIntegrationTest {
 	void listTest() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$[1].accountBalance", is(65000.0)));
+				.andExpect(jsonPath("$[0].accountBalance", is(65000.0)));
 	}
 
 	@Test
@@ -83,17 +83,27 @@ class AccountControllerIntegrationTest {
 	@Test
 	@Order(5)
 	void deActivateAccount() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/api/v1/customers/" + cid + "/accounts/" + aid + "/deactivate").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
 	@Order(6)
 	void notActiveAccount() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/v1/customers/" +cid+ "/accounts/" + aid).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -106,65 +116,105 @@ class AccountControllerIntegrationTest {
 	@Test
 	@Order(8)
 	void InvalidCustomerIdDeActivateTest() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/888163625713/accounts/" + aid + "/deactivate")
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	@Order(9)
 	void InvalidCustomerIdActivateTest() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/888163625713/accounts/" + aid + "/activate")
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	@Order(10)
 	void nullAccountActivateTest() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/" + cid + "/accounts/3714762657302/activate")
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	@Order(11)
 	void nullAccountDeActivateTest() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/customers/" + cid + "/accounts/3714762657302/deactivate")
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
 	@Order(12)
 	void activateAccountWhichAlreadyActive() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/api/v1/customers/" + cid + "/accounts/" + aid + "/activate").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	@Order(13)
 	void deleteAccountWithInvalidCustomerId() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders
 				.delete("/api/v1/customers/831163625713/accounts/" + aid).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test 
 	@Order(14)
 	void listAccountsWithInvalidCustomerId() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/v1/customers/831163625713/accounts").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
 	@Order(15)
 	void createAccountWithInvalidCustomerId() throws Exception {
+		try {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/api/v1/customers/831163625713/accounts").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test

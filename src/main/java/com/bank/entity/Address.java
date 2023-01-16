@@ -21,7 +21,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "address")
 public class Address {
@@ -29,7 +28,7 @@ public class Address {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@JsonIgnore
-	private int id;
+	private long id;
 	private String houseNumber;
 	private String city;
 	private String state;

@@ -1,6 +1,5 @@
 package com.bank.entity;
 
-import java.sql.Date;
 import java.time.Instant;
 
 import javax.persistence.CascadeType;
@@ -9,12 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.Valid;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -41,17 +40,15 @@ public class Customer {
 	private String phone;
 	private String email;
 	private String aadhar;
-//	@CreatedDate
 	@CreationTimestamp
 	private Instant createdDate;
 	@Version
 	@JsonIgnore
 	@Transient
 	private Integer version;
-//	@LastModifiedDate
 	@UpdateTimestamp
 	private Instant updatedDate;
-	
+	@Valid
 	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;
 

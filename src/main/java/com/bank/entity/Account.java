@@ -8,8 +8,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,10 +34,10 @@ public class Account {
 	private double accountBalance;
 	@Default
 	private boolean active = true;
-// 	@CreatedDate
+ //	@CreatedDate
 	@CreationTimestamp
 	private Instant createdDate;
-// 	@LastModifiedDate
+ //	@LastModifiedDate
 	@UpdateTimestamp
  	private Instant updatedDate;
  	

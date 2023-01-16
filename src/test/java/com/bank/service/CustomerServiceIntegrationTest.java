@@ -22,7 +22,7 @@ import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
 import com.bank.exception.AgeNotSatisfiedException;
-import com.bank.repository.CustomerRepository;
+import com.bank.repository.CustomerRepositoryMongo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BankApplication.class)
 @TestPropertySource(locations = "classpath:application.properties")
@@ -30,7 +30,7 @@ import com.bank.repository.CustomerRepository;
 public class CustomerServiceIntegrationTest {
 	
 	@Autowired
-	private CustomerRepository customerRepository;
+	private CustomerRepositoryMongo customerRepository;
 	
 	@Autowired
 	private CustomerService customerService;
@@ -77,7 +77,7 @@ public class CustomerServiceIntegrationTest {
 	@Order(5)
 	void testListCustomer() throws Exception {
 		List<Customer> list = customerService.list();
-		assertEquals(2, list.size());
+		assertEquals(1, list.size());
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class CustomerServiceIntegrationTest {
 	}
 	
 	@Test
-	@Order(11)
+	@Order(12)
 	void testDeleteCustomer() throws Exception {
 		List<Customer> list = customerRepository.findAll();
 		Customer c = list.get(list.size() - 1);

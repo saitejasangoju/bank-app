@@ -25,7 +25,7 @@ import com.bank.entity.Transaction;
 import com.bank.entity.TransactionType;
 import com.bank.exception.NotActiveException;
 import com.bank.repository.AccountRepository;
-import com.bank.repository.CustomerRepository;
+import com.bank.repository.CustomerRepositoryMongo;
 import com.bank.repository.TransactionRepository;
 
 @SpringBootTest
@@ -39,7 +39,7 @@ public class TransactionServiceTest {
 	private TransactionRepository transactionRepository;
 
 	@MockBean
-	private CustomerRepository customerRepository;
+	private CustomerRepositoryMongo customerRepository;
 
 	@MockBean
 	private AccountRepository accountRepository;
@@ -122,7 +122,7 @@ public class TransactionServiceTest {
 	void testGetById() throws Exception {
 		Mockito.when(customerRepository.findById("731163625713")).thenReturn(Optional.of(customer1));
 		Mockito.when(accountRepository.findByAccountNumber("3714762657302")).thenReturn(account1);
-		Mockito.when(transactionRepository.findById(22334L)).thenReturn(Optional.of(transaction1));
+		Mockito.when(transactionRepository.findById(22334L)).thenReturn(transaction1);
 		Transaction transaction = transactionService.getById("731163625713", "3714762657302", 22334L);
 		assertEquals(25000.0, transaction.getAmount());
 	}

@@ -28,8 +28,8 @@ public class TransactionServiceIntegrationTest {
 	@Autowired
 	private TransactionRepository transactionRepository;
 
-	private static String cid = "1866526833467";
-	private static String aid = "822802303280";
+	private static String cid = "178214655563";
+	private static String aid = "860308822177";
 
 	@Test
 	@Order(1)
@@ -71,7 +71,7 @@ public class TransactionServiceIntegrationTest {
 	@Test
 	@Order(6)
 	void testMoneyTransfer() throws Exception {
-		MoneyTransfer transfer = MoneyTransfer.builder().amount(1200.0).receiver("548457423042").build();
+		MoneyTransfer transfer = MoneyTransfer.builder().amount(1200.0).receiver("271345200864").build();
 		List<Transaction> transactions = transactionService.moneyTransfer(cid, aid, transfer);
 		assertEquals(2, transactions.size());		
 	}
@@ -135,7 +135,7 @@ public class TransactionServiceIntegrationTest {
 	@Test
 	@Order(14)
 	void testAccount2DeleteTransactions() throws Exception {
-		String deletedMessage = transactionService.deleteByAccountNumber(cid, "548457423042");
+		String deletedMessage = transactionService.deleteByAccountNumber(cid, "271345200864");
 		assertEquals("Deleted Successfully", deletedMessage);		
 	}
 	

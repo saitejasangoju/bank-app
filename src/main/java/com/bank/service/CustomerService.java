@@ -1,18 +1,18 @@
 package com.bank.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Customer;
 import com.bank.exception.AgeNotSatisfiedException;
-import com.bank.exception.MethodArgumentNotValidException;
 import com.bank.repository.CustomerRepository;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -24,6 +24,9 @@ public class CustomerService {
 	
 	@Autowired
 	private CustomerRepository customerRepo;
+	
+//	@Autowired
+//	private CustomerRepositoryMongo customerRepo;
 	
 	// get customer by id
 	public Customer getById(String customerId) {
@@ -48,8 +51,10 @@ public class CustomerService {
 		}
 		Customer existingCustomer = customerRepo.findByAadhar(customer.getAadhar());
 		// checking for valid aadhar number
-		if(existingCustomer != null || customer.getAadhar().startsWith("0"))
-			throw new IllegalArgumentException("Invalid Aadhar Number");
+		if(existingCustomer != null)
+			throw new IllegalArgumentException("Aadhar already exist");
+		if(customer.getAadhar().startsWith("0"))
+			throw new IllegalArgumentException("Invalid Aadhar number");
 		customer.setCustomerId(util.generateId());
 		customerRepo.save(customer);
 		log.info("New customer is added successfully");

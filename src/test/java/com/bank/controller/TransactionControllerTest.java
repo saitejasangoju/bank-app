@@ -121,7 +121,7 @@ class TransactionControllerTest {
 	void getByIdTest() throws Exception {
 		Mockito.when(transactionService.getById("731163625713", "3714762657302", 2337382L)).thenReturn(transaction1);
 		mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/v1/customers/731163625713/accounts/3714762657302/transactions/63ac7b0ec00a170f750646b8")
+				.get("/api/v1/customers/731163625713/accounts/3714762657302/transactions/2337382")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.amount", is(2500.0)));
 	}

@@ -33,7 +33,7 @@ public class AccountServiceIntegrationTest {
 	@Autowired
 	private AccountRepository accountRepository;
 	
-	private static String cid = "1866526833467";
+	private static String cid = "178214655563";
 	private static String accNumber = "";
 	private AccountDto account;
 	
@@ -84,18 +84,12 @@ public class AccountServiceIntegrationTest {
 	@Test
 	@Order(5)
 	void notActiveAccount() throws Exception {
-//		List<Account> list = accountRepository.findAll();
-//		Account acc = list.get(list.size() - 1);
-//		String accNumber = acc.getAccountNumber();
 		assertThrows(NoSuchElementException.class, () -> accountService.getByAccountNumber(cid, accNumber));
 	}
 
 	@Test
 	@Order(6)
 	void ativateAccountTest() throws Exception {
-//		List<Account> list = accountRepository.findAll();
-//		Account acc = list.get(list.size() - 1);
-//		String accNumber = acc.getAccountNumber();
 		Account activatedAccount = accountService.activate(cid, accNumber);
 		assertEquals(true, activatedAccount.isActive());
 	}
@@ -115,20 +109,14 @@ public class AccountServiceIntegrationTest {
 	@Test
 	@Order(10)
 	void customerIdAndAccountNumberNotLinkedForDelete() throws Exception {
-//		List<Account> list = accountRepository.findAll();
-//		Account acc = list.get(list.size() - 1);
-//		String accNumber = acc.getAccountNumber();
 		assertThrows(NoSuchElementException.class, () -> accountService.delete("321428876400", accNumber));
 	}
 	
 	@Test
 	@Order(11)
 	void deleteAccountTest() throws Exception {
-//		List<Account> list = accountRepository.findAll();
-//		Account acc = list.get(list.size() - 1);
-//		String accNumber = acc.getAccountNumber();
 		Account deletedAccount = accountService.delete(cid, accNumber);
-		assertEquals("1866526833467", deletedAccount.getCustomerId());
+		assertEquals("178214655563", deletedAccount.getCustomerId());
 	}
 	
 }

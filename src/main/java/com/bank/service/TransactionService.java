@@ -64,7 +64,7 @@ public class TransactionService {
 		if (!account.getCustomerId().equals(customerId)) {
 			throw new IllegalArgumentException("Customer id doesn't contain account number " + accountNumber);
 		}
-		return transactionRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Transaction doesn't exist"));
+		return transactionRepo.findById(id);
 	}
 
 	// getting recent transactions maximum 10
@@ -111,7 +111,7 @@ public class TransactionService {
 			throw new IllegalArgumentException(INVALID_CUSTOMER_REQUEST);
 		if (!account.isActive())
 			throw new NotActiveException("Account is not active");
-		Transaction transaction = Transaction.builder().customerId(customerId).accountNumber(accountNumber)
+		Transaction transaction = Transaction.builder().id(util.generateTransactionId()).customerId(customerId).accountNumber(accountNumber)
 				.amount(credit.getAmount()).type(TransactionType.DEPOSIT).build();
 		transactionRepo.save(transaction);
 		account.setAccountBalance(account.getAccountBalance() + transaction.getAmount());
@@ -135,7 +135,7 @@ public class TransactionService {
 		if (debit.getAmount() <= 0) {
 			throw new IllegalArgumentException("Sorry, You cannot withdraw 0 or lesser");
 		}
-		Transaction transaction = Transaction.builder().customerId(customerId).accountNumber(accountNumber)
+		Transaction transaction = Transaction.builder().id(util.generateTransactionId()).customerId(customerId).accountNumber(accountNumber)
 				.amount(debit.getAmount()).type(TransactionType.WITHDRAW).build();
 		transactionRepo.save(transaction);
 		account.setAccountBalance(account.getAccountBalance() - transaction.getAmount());
@@ -166,14 +166,14 @@ public class TransactionService {
 		// transaction at sender
 		double amount = transferObj.getAmount();
 		double balanceAfterDebit = sendingAccount.getAccountBalance() - amount;
-		Transaction transactionAtSender = Transaction.builder().accountNumber(sendingAccount.getAccountNumber())
+		Transaction transactionAtSender = Transaction.builder().id(util.generateTransactionId()).accountNumber(sendingAccount.getAccountNumber())
 				.customerId(sendingAccount.getCustomerId()).amount(amount).type(TransactionType.WITHDRAW).build();
 		log.info("balance after debit " + balanceAfterDebit);
 		transactionAtSender = transactionRepo.save(transactionAtSender);
 		transactionsList.add(transactionAtSender);
 		// transaction at receiver
 		double balanceAfterCredit = receiverAccount.getAccountBalance() + amount;
-		Transaction transactionAtReceiver = Transaction.builder().accountNumber(receiverAccount.getAccountNumber())
+		Transaction transactionAtReceiver = Transaction.builder().id(util.generateTransactionId()).accountNumber(receiverAccount.getAccountNumber())
 				.customerId(receiverAccount.getCustomerId()).amount(amount).type(TransactionType.DEPOSIT).build();
 		log.info("balance after credit " + balanceAfterCredit);
 		transactionAtReceiver = transactionRepo.save(transactionAtReceiver);
@@ -198,7 +198,8 @@ public class TransactionService {
 		for (Transaction t : allTransactions) {
 			if (t.getAccountNumber().equals(accountNumber)) {
 				Long id = t.getId();
-				transactionRepo.deleteById(id);
+				Transaction transaction = transactionRepo.findById(id);
+				transactionRepo.delete(transaction);
 			}
 		}
 		return "Deleted Successfully";

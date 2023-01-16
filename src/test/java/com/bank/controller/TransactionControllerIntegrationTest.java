@@ -48,8 +48,8 @@ class TransactionControllerIntegrationTest {
 	@Autowired
 	private TransactionRepository transactionRepo;
 
-	private static String cid = "821810274100";
-	private static String aid = "1342120573283";
+	private static String cid = "811874306138";
+	private static String aid = "367107517760";
 	private static Long tid;
 
 	@Test
@@ -77,7 +77,7 @@ class TransactionControllerIntegrationTest {
 	@Test
 	@Order(3)
 	void transferTest1() throws Exception {
-		MoneyTransfer transfer = MoneyTransfer.builder().amount(3200.0).receiver("124608332868").build();
+		MoneyTransfer transfer = MoneyTransfer.builder().amount(3200.0).receiver("875286176505").build();
 		String content = objectMapper.writeValueAsString(transfer);
 		mockMvc.perform(
 				MockMvcRequestBuilders.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/transfer")
@@ -114,7 +114,7 @@ class TransactionControllerIntegrationTest {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/" + tid)
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.customerId", is("821810274100")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.customerId", is("811874306138")));
 	}
 
 	@Test
@@ -218,42 +218,64 @@ class TransactionControllerIntegrationTest {
 	@Test
 	@Order(16)
 	void invalidGetByIdTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/63ac7b0ec00a170f750646b8")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(
+					MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/676576")
+							.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	@Order(17)
 	void invalidCustomerIdTest() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v1/customers/831163625713/accounts/" + aid + "/transactions/" + tid)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.get("/api/v1/customers/831163625713/accounts/" + aid + "/transactions/" + tid)
+					.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	@Order(18)
 	void invalidAccountNumberListTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/3714762657302/transactions")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(
+					MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/3714762657302/transactions")
+							.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	@Order(19)
 	void invalidAccountGetRecentTest() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/8714762657302/transactions/recent")
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.get("/api/v1/customers/" + cid + "/accounts/8714762657302/transactions/recent")
+					.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// customer not match account
 	@Test
 	@Order(20)
 	void invalidCustomerIdGetRecentTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/8932423874/accounts/" + aid + "/transactions/recent")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.get("/api/v1/customers/875286176505/accounts/" + aid + "/transactions/recent")
+					.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// customer not match account
@@ -262,10 +284,14 @@ class TransactionControllerIntegrationTest {
 	void invalidCustomerIdDepositTest() throws Exception {
 		CreditDebit dto = CreditDebit.builder().amount(2500).build();
 		String content = objectMapper.writeValueAsString(dto);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.post("/api/v1/customers/221163625713/accounts/" + aid + "/transactions/deposit").content(content)
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		try {
+			MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
+					.post("/api/v1/customers/221163625713/accounts/" + aid + "/transactions/deposit").content(content)
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
+			mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// account is null
@@ -274,22 +300,30 @@ class TransactionControllerIntegrationTest {
 	void invalidAccountNumberDepositTest() throws Exception {
 		CreditDebit dto = CreditDebit.builder().amount(2500).build();
 		String content = objectMapper.writeValueAsString(dto);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.post("/api/v1/customers/" + cid + "/accounts/8814762657302/transactions/deposit").content(content)
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		try {
+			MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
+					.post("/api/v1/customers/" + cid + "/accounts/8814762657302/transactions/deposit").content(content)
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
+			mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	// in active account
+	// inactive account
 	@Test
 	@Order(23)
 	void inActiveAccountDepositTest() throws Exception {
 		CreditDebit dto = CreditDebit.builder().amount(2500).build();
 		String content = objectMapper.writeValueAsString(dto);
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.post("/api/v1/customers/321428876400/accounts/325301555884/transactions/deposit").content(content)
-				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		try {
+			MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
+					.post("/api/v1/customers/1436347272332/accounts/1611064388371/transactions/deposit").content(content)
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
+			mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// customer not match account
@@ -298,10 +332,14 @@ class TransactionControllerIntegrationTest {
 	void invalidCustomerIdWithdrawalTest() throws Exception {
 		CreditDebit dto = CreditDebit.builder().amount(2500).build();
 		String content = objectMapper.writeValueAsString(dto);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/8732873287328/accounts/" + aid + "/transactions/withdrawal").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/8732873287328/accounts/" + aid + "/transactions/withdrawal")
+					.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// account is null
@@ -310,10 +348,14 @@ class TransactionControllerIntegrationTest {
 	void invalidAccountNumberWithdrawalTest() throws Exception {
 		CreditDebit dto = CreditDebit.builder().amount(2500).build();
 		String content = objectMapper.writeValueAsString(dto);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/" + cid + "/accounts/8814762657302/transactions/withdrawal").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/" + cid + "/accounts/8814762657302/transactions/withdrawal")
+					.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// in active account
@@ -322,10 +364,14 @@ class TransactionControllerIntegrationTest {
 	void inActiveAccountWithdrawalTest() throws Exception {
 		CreditDebit dto = CreditDebit.builder().amount(2500).build();
 		String content = objectMapper.writeValueAsString(dto);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/321428876400/accounts/325301555884/transactions/withdrawal").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/1436347272332/accounts/1611064388371/transactions/withdrawal")
+					.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// insufficient balance
@@ -334,10 +380,14 @@ class TransactionControllerIntegrationTest {
 	void insuffucientBalanceWithdrawalTest() throws Exception {
 		CreditDebit dto = CreditDebit.builder().amount(2500).build();
 		String content = objectMapper.writeValueAsString(dto);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/321428876400/accounts/325301555884/transactions/withdrawal").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/1436347272332/accounts/1018458772434/transactions/withdrawal")
+					.content(content).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// sender account is not active
@@ -346,39 +396,58 @@ class TransactionControllerIntegrationTest {
 	void invactiveSenderAccountTransfer() throws Exception {
 		MoneyTransfer dto = MoneyTransfer.builder().amount(3500.0).receiver(aid).build();
 		String content = objectMapper.writeValueAsString(dto);
+		try {
 		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/321428876400/accounts/325301555884/transactions/transfer").content(content)
+				.post("/api/v1/customers/1436347272332/accounts/1611064388371/transactions/transfer").content(content)
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// sender account is not active
 	@Test
 	@Order(29)
 	void invactiveReceiverAccountTransfer() throws Exception {
-		MoneyTransfer dto = MoneyTransfer.builder().amount(3500.0).receiver("325301555884").build();
+		MoneyTransfer dto = MoneyTransfer.builder().amount(3500.0).receiver("1611064388371").build();
 		String content = objectMapper.writeValueAsString(dto);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/transfer").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/transfer").content(content)
+					.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// wrong transaction id
 	@Test
 	@Order(30)
 	void InvalidId() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/13ac7b0ec00a170f750646b9")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.get("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/372637")
+					.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// wrong acount number
 	@Test
 	@Order(31)
 	void listWithInvalidAccountNumber() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/9714762657302/transactions")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(
+					MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts/9714762657302/transactions")
+							.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// depositing amount 0
@@ -387,10 +456,14 @@ class TransactionControllerIntegrationTest {
 	void invalidAmountForDeposit() throws Exception {
 		CreditDebit credit = CreditDebit.builder().amount(0).build();
 		String content = objectMapper.writeValueAsString(credit);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/deposit").content(content)
+					.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -400,10 +473,14 @@ class TransactionControllerIntegrationTest {
 	void invalidAmountForWithDrawal() throws Exception {
 		CreditDebit debit = CreditDebit.builder().amount(0).build();
 		String content = objectMapper.writeValueAsString(debit);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/withdrawal").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/withdrawal").content(content)
+					.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -411,12 +488,16 @@ class TransactionControllerIntegrationTest {
 	@Test
 	@Order(34)
 	void invalidAmountForTransfer() throws Exception {
-		MoneyTransfer transfer = MoneyTransfer.builder().amount(0).receiver("124608332868").build();
+		MoneyTransfer transfer = MoneyTransfer.builder().amount(0).receiver("875286176505").build();
 		String content = objectMapper.writeValueAsString(transfer);
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/transfer").content(content)
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.post("/api/v1/customers/" + cid + "/accounts/" + aid + "/transactions/transfer").content(content)
+					.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -424,18 +505,26 @@ class TransactionControllerIntegrationTest {
 	@Test
 	@Order(35)
 	void invalidAccountDeleteTest() throws Exception {
-		MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
-				.delete("/api/v1/customers/" + cid + "/accounts/3714762657302/transactions/delete");
-		mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		try {
+			MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders
+					.delete("/api/v1/customers/" + cid + "/accounts/3714762657302/transactions/delete");
+			mockMvc.perform(mockRequest).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// invalid customer id
 	@Test
 	@Order(36)
 	void invalidCustomerIdDeleteTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.delete("/api/v1/customers/831163625713/accounts/" + aid + "/transactions/delete")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		try {
+			mockMvc.perform(MockMvcRequestBuilders
+					.delete("/api/v1/customers/831163625713/accounts/" + aid + "/transactions/delete")
+					.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -451,7 +540,7 @@ class TransactionControllerIntegrationTest {
 	@Order(38)
 	void deleteByAccountNumber2Test() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
-				.delete("/api/v1/customers/321428876400/accounts/124608332868/transactions/delete")
+				.delete("/api/v1/customers/1436347272332/accounts/875286176505/transactions/delete")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 

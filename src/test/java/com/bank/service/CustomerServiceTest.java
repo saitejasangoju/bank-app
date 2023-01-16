@@ -23,7 +23,7 @@ import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
 import com.bank.exception.AgeNotSatisfiedException;
-import com.bank.repository.CustomerRepository;
+import com.bank.repository.CustomerRepositoryMongo;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,7 +33,7 @@ public class CustomerServiceTest {
 	private CustomerService customerService;
 	
 	@MockBean
-	private CustomerRepository customerRepository;
+	private CustomerRepositoryMongo customerRepository;
 
 	Address address = Address.builder().city("hyd").houseNumber("23-8").pincode("989898").state("ts").build();
 	CustomerDto customer1Dto = CustomerDto.builder().name("teja").dob("2000-04-26").phone("9283773654").email("teja@gmail.com").aadhar("987678098076")

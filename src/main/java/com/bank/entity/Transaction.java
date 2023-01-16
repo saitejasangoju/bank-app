@@ -1,7 +1,6 @@
 package com.bank.entity;
 
 import java.time.Instant;
-import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,8 +24,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "transaction")
 public class Transaction {
-	@Id
+	
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id
 	private Long id;
 	private String customerId;
 	private String accountNumber;
