@@ -60,9 +60,9 @@ class TransactionControllerTest {
 	Instant date1 = Instant.parse("2022-12-04T17:21:18.139Z");
 	Instant date2 = Instant.parse("2022-12-03T17:21:18.139Z");
 	Transaction transaction1 = Transaction.builder().id(2337382L).customerId("731163625713")
-			.accountNumber("3714762657302").date(date1).amount(2500.0).type(TransactionType.DEPOSIT).build();
+			.accountNumber("3714762657302").amount(2500.0).type(TransactionType.DEPOSIT).build();
 	Transaction transaction2 = Transaction.builder().id(3442121L).customerId("731163625713")
-			.accountNumber("3714762657302").date(date2).amount(2700.0).type(TransactionType.WITHDRAW).build();
+			.accountNumber("3714762657302").amount(2700.0).type(TransactionType.WITHDRAW).build();
 
 	
 	@Test

@@ -3,9 +3,9 @@ package com.bank.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.List;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -17,11 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import com.bank.BankApplication;
 import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
 import com.bank.entity.AccountType;
-import com.bank.repository.AccountRepository;
+import com.bank.repository.mongo.AccountRepositoryMongo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BankApplication.class)
@@ -34,12 +35,12 @@ class AccountControllerIntegrationTest {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private AccountRepositoryMongo accountRepository;
 
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String cid = "1436347272332";
+	private String cid = "474340236075";
 	private static String aid = "";
 	private AccountDto dtoAccount;
 
@@ -59,7 +60,7 @@ class AccountControllerIntegrationTest {
 	void listTest() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/" + cid + "/accounts")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$[0].accountBalance", is(65000.0)));
+				.andExpect(jsonPath("$[2].accountBalance", is(65000.0)));
 	}
 
 	@Test

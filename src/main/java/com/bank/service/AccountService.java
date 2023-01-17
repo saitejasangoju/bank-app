@@ -69,7 +69,7 @@ public class AccountService {
 		if(account.getCustomerId().equals(customerId))
 			accountRepo.delete(account);
 		else 
-			throw new CustomerNotMatchAccount("Customer not matching account" + accountNumber);
+			throw new CustomerNotMatchAccount("Customer not matching account of number : " + accountNumber);
 		return account;
 	}
 

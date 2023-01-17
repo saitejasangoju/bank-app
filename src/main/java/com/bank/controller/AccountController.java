@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +28,6 @@ public class AccountController {
 	@Autowired
 	private AccountService service;
 	
-	@Autowired
-	ModelMapper modelMapper;
-	
 	@GetMapping("/{customerId}/accounts")
 	public List<Account> list(@PathVariable String customerId){
 		return service.list(customerId);
@@ -44,7 +40,6 @@ public class AccountController {
 	
 	@PostMapping("/{customerId}/accounts")
 	public Account create(@RequestBody @Valid AccountDto accountDto) {
-	//	return service.create(modelMapper.map(accountDto, Account.class));
 		return service.create(accountDto);
 	}
 	

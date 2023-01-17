@@ -21,13 +21,10 @@ public class AccountTypeConverter implements AttributeConverter<AccountType, Str
 		if (type == null) {
             return null;
         }
-		
         return Stream.of(AccountType.values())
           .filter(c -> c.getType().equals(type))
           .findFirst()
           .orElseThrow(IllegalArgumentException::new);
 	}
-
-	
 	
 }

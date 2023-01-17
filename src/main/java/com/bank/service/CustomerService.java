@@ -25,9 +25,6 @@ public class CustomerService {
 	@Autowired
 	private CustomerRepository customerRepo;
 	
-//	@Autowired
-//	private CustomerRepositoryMongo customerRepo;
-	
 	// get customer by id
 	public Customer getById(String customerId) {
 		return customerRepo.findById(customerId).orElseThrow(() -> new IllegalArgumentException("Customer doesn't exist"));

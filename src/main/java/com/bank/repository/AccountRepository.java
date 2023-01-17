@@ -12,9 +12,3 @@ public interface AccountRepository{
 	
 	Account findByAccountNumber(String accountNumber);
 }
-
-//@Repository
-//public interface AccountRepository extends JpaRepository<Account, String>{
-//
-//	Account findByAccountNumber(String accountNumber);
-//}

@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
-
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -22,7 +19,7 @@ import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
 import com.bank.exception.AgeNotSatisfiedException;
-import com.bank.repository.CustomerRepositoryMongo;
+import com.bank.repository.mongo.CustomerRepositoryMongo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BankApplication.class)
 @TestPropertySource(locations = "classpath:application.properties")
@@ -77,7 +74,7 @@ public class CustomerServiceIntegrationTest {
 	@Order(5)
 	void testListCustomer() throws Exception {
 		List<Customer> list = customerService.list();
-		assertEquals(1, list.size());
+		assertEquals(4, list.size());
 	}
 
 	@Test

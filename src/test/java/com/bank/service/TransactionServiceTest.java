@@ -24,9 +24,9 @@ import com.bank.entity.Customer;
 import com.bank.entity.Transaction;
 import com.bank.entity.TransactionType;
 import com.bank.exception.NotActiveException;
-import com.bank.repository.AccountRepository;
-import com.bank.repository.CustomerRepositoryMongo;
-import com.bank.repository.TransactionRepository;
+import com.bank.repository.mongo.AccountRepositoryMongo;
+import com.bank.repository.mongo.CustomerRepositoryMongo;
+import com.bank.repository.mongo.TransactionRepositoryMongo;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -36,13 +36,13 @@ public class TransactionServiceTest {
 	private TransactionService transactionService;
 
 	@MockBean
-	private TransactionRepository transactionRepository;
+	private TransactionRepositoryMongo transactionRepository;
 
 	@MockBean
 	private CustomerRepositoryMongo customerRepository;
 
 	@MockBean
-	private AccountRepository accountRepository;
+	private AccountRepositoryMongo accountRepository;
 
 	Address address = Address.builder().houseNumber("34-9").city("hyd").state("ts").pincode("987789").build();
 	Customer customer1 = Customer.builder().customerId("731163625713").name("teja").dob("2002-11-05")
@@ -63,11 +63,11 @@ public class TransactionServiceTest {
 	Instant date1 = Instant.parse("2022-12-04T17:21:18.139Z");
 	Instant date2 = Instant.parse("2022-12-03T17:21:18.139Z");
 	Transaction transaction1 = Transaction.builder().id(22334L).customerId("731163625713")
-			.accountNumber("3714762657302").date(date1).amount(25000.0).type(TransactionType.DEPOSIT).build();
+			.accountNumber("3714762657302").amount(25000.0).type(TransactionType.DEPOSIT).build();
 	Transaction transaction2 = Transaction.builder().id(43224L).customerId("731163625713")
-			.accountNumber("3714762657302").date(date2).amount(3700.0).type(TransactionType.DEPOSIT).build();
+			.accountNumber("3714762657302").amount(3700.0).type(TransactionType.DEPOSIT).build();
 	Transaction transaction3 = Transaction.builder().id(87659L).customerId("881163625713")
-			.accountNumber("8714762657302").date(date2).amount(3700.0).type(TransactionType.WITHDRAW).build();
+			.accountNumber("8714762657302").amount(3700.0).type(TransactionType.WITHDRAW).build();
 
 	@Test
 	void testDeposit() throws Exception {

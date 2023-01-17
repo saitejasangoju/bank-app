@@ -15,15 +15,3 @@ public interface TransactionRepository {
 }
 
 
-//@Repository
-//public interface TransactionRepository extends MongoRepository<Transaction, String>{
-//
-//	List<Transaction> findByAccountNumber(String accountNumber);
-//	Transaction findById(Long id);
-//}
-//
-////@Repository
-////public interface TransactionRepository extends JpaRepository<Transaction, Long>{
-////
-////	List<Transaction> findByAccountNumber(String accountNumber);
-////}

@@ -28,7 +28,4 @@ public class TransactionTypeConverter implements AttributeConverter<TransactionT
           .findFirst()
           .orElseThrow(IllegalArgumentException::new);
 	}
-	
-	
-	
 }

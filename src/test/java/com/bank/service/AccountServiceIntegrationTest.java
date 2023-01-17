@@ -19,7 +19,7 @@ import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
 import com.bank.entity.AccountType;
 import com.bank.exception.CustomerNotMatchAccount;
-import com.bank.repository.AccountRepository;
+import com.bank.repository.mongo.AccountRepositoryMongo;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BankApplication.class)
@@ -31,9 +31,9 @@ public class AccountServiceIntegrationTest {
 	private AccountService accountService;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private AccountRepositoryMongo accountRepository;
 	
-	private static String cid = "178214655563";
+	private static String cid = "474340236075";
 	private static String accNumber = "";
 	private AccountDto account;
 	
@@ -49,7 +49,7 @@ public class AccountServiceIntegrationTest {
 	@Order(2)
 	void listAccountsTest() throws Exception {
 		List<Account> list = accountService.list(cid);
-		assertEquals(1, list.size());
+		assertEquals(3, list.size());
 	}
 
 	@Test
@@ -65,13 +65,13 @@ public class AccountServiceIntegrationTest {
 	@Test
 	@Order(4)
 	void customerNotMatchAccountNumberForDeActivate() throws Exception {
-		assertThrows(NoSuchElementException.class, () -> accountService.deactivate(cid, "124608332868"));
+		assertThrows(IllegalArgumentException.class, () -> accountService.deactivate(cid, "553076470440"));
 	}
 	
 	@Test
 	@Order(4)
 	void customerNotMatchAccountNumberForActivate() throws Exception {
-		assertThrows(NoSuchElementException.class, () -> accountService.activate(cid, "124608332868"));
+		assertThrows(IllegalArgumentException.class, () -> accountService.activate(cid, "553076470440"));
 	}
 	
 	@Test
@@ -103,20 +103,20 @@ public class AccountServiceIntegrationTest {
 	@Test
 	@Order(8)
 	void customerIdAndAccountNumberNotLinkedForGet() throws Exception {
-		assertThrows(NoSuchElementException.class, () -> accountService.getByAccountNumber("43633738766532", "323232323232323"));
+		assertThrows(NoSuchElementException.class, () -> accountService.getByAccountNumber("670734644318", accNumber));
 	}
 	
 	@Test
 	@Order(10)
 	void customerIdAndAccountNumberNotLinkedForDelete() throws Exception {
-		assertThrows(NoSuchElementException.class, () -> accountService.delete("321428876400", accNumber));
+		assertThrows(CustomerNotMatchAccount.class, () -> accountService.delete("670734644318", accNumber));
 	}
 	
 	@Test
 	@Order(11)
 	void deleteAccountTest() throws Exception {
 		Account deletedAccount = accountService.delete(cid, accNumber);
-		assertEquals("178214655563", deletedAccount.getCustomerId());
+		assertEquals("474340236075", deletedAccount.getCustomerId());
 	}
 	
 }

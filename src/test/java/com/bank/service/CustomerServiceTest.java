@@ -1,16 +1,13 @@
 package com.bank.service;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,7 @@ import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
 import com.bank.exception.AgeNotSatisfiedException;
-import com.bank.repository.CustomerRepositoryMongo;
+import com.bank.repository.mongo.CustomerRepositoryMongo;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -38,15 +35,18 @@ public class CustomerServiceTest {
 	Address address = Address.builder().city("hyd").houseNumber("23-8").pincode("989898").state("ts").build();
 	CustomerDto customer1Dto = CustomerDto.builder().name("teja").dob("2000-04-26").phone("9283773654").email("teja@gmail.com").aadhar("987678098076")
 			.address(address).build();
-	Customer customer2 = Customer.builder().name("saiteja").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+	Customer customer2 = Customer.builder().customerId("1234535672134").name("saiteja").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
 			.address(address).build();
 	CustomerUpdateDto customerUpdateDto = CustomerUpdateDto.builder().email("teja@gmail.com").phone("9283773654").address(address).build();
 
 	
 	@Test
 	void testCreateCustomer() throws Exception {
-		Mockito.when(customerRepository.findById("1234535672134")).thenReturn(Optional.of(customer2));
-		Customer customer = customerService.create(customer2);
+		Customer customer1 = Customer.builder().customerId("2234535672134").name("saiteja").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("579678098076")
+				.address(address).build();
+		Mockito.when(customerRepository.findByAadhar("579678098076")).thenReturn(null);
+		Mockito.when(customerRepository.save(customer1)).thenReturn(customer1);
+		Customer customer = customerService.create(customer1);
 		assertEquals("sai@gmail.com", customer.getEmail());
 	}
 
@@ -85,6 +85,8 @@ public class CustomerServiceTest {
 	
 	@Test
 	void testUpdateCustomer() throws Exception {
+		Customer customer2 = Customer.builder().customerId("1234535672134").name("saiteja").dob("2002-11-05").phone("8987773654").email("sai@gmail.com").aadhar("879678098076")
+				.address(address).build();
 		Mockito.when(customerRepository.findById("1234535672134")).thenReturn(Optional.of(customer2));
 		Customer customer = customerService.update("1234535672134", customerUpdateDto);
 		assertEquals("teja@gmail.com", customer.getEmail());

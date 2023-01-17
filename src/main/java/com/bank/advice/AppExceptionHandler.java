@@ -14,6 +14,7 @@ import com.bank.exception.ErrorResponse;
 import com.bank.exception.NotActiveException;
 
 
+@SuppressWarnings("serial")
 @RestControllerAdvice
 public class AppExceptionHandler extends RuntimeException{
 

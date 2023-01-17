@@ -18,8 +18,8 @@ import com.bank.entity.Account;
 import com.bank.entity.AccountType;
 import com.bank.entity.Address;
 import com.bank.entity.Customer;
-import com.bank.repository.AccountRepository;
-import com.bank.repository.CustomerRepositoryMongo;
+import com.bank.repository.mongo.AccountRepositoryMongo;
+import com.bank.repository.mongo.CustomerRepositoryMongo;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,7 +32,7 @@ public class AccountServiceTest {
 	private CustomerRepositoryMongo customerRepository;
 
 	@MockBean
-	private AccountRepository accountRepository;
+	private AccountRepositoryMongo accountRepository;
 
 	Address address = Address.builder().city("hyd").houseNumber("56/7").pincode("456543").state("ts").build();
 	Customer customer1 = Customer.builder().customerId("381705176241").name("teja").dob("2002-10-20")

@@ -32,12 +32,6 @@ class EntityTest {
 	void customerUpdateTest() {
 		ToStringVerifier.forClass(CustomerUpdateDto.builder().getClass()).verify();
 	}
-	
-	@Test
-	void accountTest() {
-		ToStringVerifier.forClass(Account.builder().getClass()).verify();
-	}
-	
 
 	@Test
 	void accountDtoTest() {
@@ -57,6 +51,11 @@ class EntityTest {
 	@Test
 	void creditDebitTest() {
 		ToStringVerifier.forClass(CreditDebit.builder().getClass()).verify();
+	}
+	
+	@Test
+	void transactionTest() {
+		ToStringVerifier.forClass(Transaction.builder().getClass()).verify();
 	}
 
 

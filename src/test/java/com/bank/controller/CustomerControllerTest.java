@@ -28,6 +28,7 @@ import com.bank.entity.Address;
 import com.bank.entity.Customer;
 import com.bank.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -66,6 +67,15 @@ class CustomerControllerTest {
 		Mockito.when(customerService.getByCustomerIdAndAadharAndName("8835429456789", "449678098076", "teja")).thenReturn(c1);
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/8835429456789/aadhar/449678098076/name/teja").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.name", is("teja")));
+	}
+	
+	@Test
+	void getById() throws Exception {
+		Customer c1 = Customer.builder().customerId("8835429456789").name("teja").dob("2002-11-05").phone("7787773654")
+				.email("teja@gmail.com").aadhar("449678098076").address(address).build();
+		Mockito.when(customerService.getById("8835429456789")).thenReturn(c1);
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/8835429456789").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isAccepted()).andExpect(jsonPath("$.name", is("teja")));
 	}
 	
 	@Test

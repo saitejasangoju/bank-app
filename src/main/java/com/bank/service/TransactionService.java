@@ -64,7 +64,11 @@ public class TransactionService {
 		if (!account.getCustomerId().equals(customerId)) {
 			throw new IllegalArgumentException("Customer id doesn't contain account number " + accountNumber);
 		}
-		return transactionRepo.findById(id);
+		Transaction transaction = transactionRepo.findById(id);
+		if(transaction == null) 
+			throw new NoSuchElementException("Transaction doesn't exist.");
+		else
+			return transaction;
 	}
 
 	// getting recent transactions maximum 10
