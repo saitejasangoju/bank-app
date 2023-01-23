@@ -1,9 +1,12 @@
 package com.bank;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.bind.annotation.RestController;
 
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -14,8 +17,10 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
-@EnableMongoAuditing
+@SpringBootApplication(scanBasePackages= {"com.bank.controller", "com.bank.service"})
+@EnableMongoRepositories("com.bank.repository.mongo")
+@EnableJpaRepositories("com.bank.repository.postgres")
+@EntityScan("com.bank.entity")
 @EnableSwagger2
 public class BankApplication {
 	
@@ -38,6 +43,11 @@ public class BankApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BankApplication.class, args);
+	}
+	
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
 	}
 
 }

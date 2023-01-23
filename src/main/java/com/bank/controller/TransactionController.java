@@ -33,7 +33,7 @@ public class TransactionController {
 	}
 	
 	@GetMapping("/{customerId}/accounts/{accountNumber}/transactions/{id}")
-	public Transaction getById(@PathVariable String customerId, @PathVariable String accountNumber, @PathVariable String id){
+	public Transaction getById(@PathVariable String customerId, @PathVariable String accountNumber, @PathVariable Long id){
 		return service.getById(customerId, accountNumber, id);
 	}
 	
@@ -43,7 +43,7 @@ public class TransactionController {
 	}
 	
 	@PostMapping("/{customerId}/accounts/{accountNumber}/transactions/deposit")
-	public Transaction deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit credit) throws CustomerNotMatchAccount, NotActiveException {
+	public Transaction deposit(@PathVariable String customerId, @PathVariable String accountNumber, @RequestBody CreditDebit credit) throws CustomerNotMatchAccount, NotActiveException, com.bank.exception.NotActiveException {
 		return service.deposit(customerId, accountNumber, credit);
 	}
 

@@ -1,26 +1,40 @@
 package com.bank.entity;
 
-import java.time.Instant;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Document(collection = "transactions")
+@Entity
+@Table(name = "transaction")
 public class Transaction {
+	
 	@Id
-	private String id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@org.springframework.data.annotation.Id
+	private Long id;
 	private String customerId;
 	private String accountNumber;
+	@CreationTimestamp
 	@CreatedDate
-	private Instant date;
+	private Date date;
 	private double amount;
 	private TransactionType type;
 }

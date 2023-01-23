@@ -1,10 +1,14 @@
 package com.bank.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.List;
 
 import com.bank.entity.Account;
 
-public interface AccountRepository extends MongoRepository<Account, String>{
-
+public interface AccountRepository{
+	
+	Account save(Account account);
+	List<Account> findAll();
+	void delete(Account account);
+	
 	Account findByAccountNumber(String accountNumber);
 }

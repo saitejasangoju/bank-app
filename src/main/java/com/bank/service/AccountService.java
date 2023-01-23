@@ -1,15 +1,17 @@
 package com.bank.service;
 
-import java.io.NotActiveException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
 import com.bank.exception.CustomerNotMatchAccount;
 import com.bank.repository.AccountRepository;
-import com.bank.util.Utility;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -17,28 +19,32 @@ import lombok.extern.slf4j.Slf4j;
 public class AccountService {
 	
 	private static final String INVALID_ACCOUNT_NUMBER = "Account doesn't exist";
-
+	private static final String CUSTOMER_FETCHED = "Customer fetched of id : {} ";
+	
 	@Autowired
 	private Utility util;
 	
 	@Autowired
 	private AccountRepository accountRepo;
-	
-	
+
 	// create account
-	public Account create(Account account) {
-		account.setAccountNumber(util.generateAccountNumber());
-		return accountRepo.save(account);
+	public Account create(AccountDto account) {
+		util.validateCustomer(account.getCustomerId());
+		log.info(CUSTOMER_FETCHED, account.getCustomerId());
+		Account accountObj = Account.builder().accountNumber(util.generateId()).customerId(account.getCustomerId())
+				.type(account.getType()).ifscCode(account.getIfscCode()).accountBalance(account.getAccountBalance())
+				.active(true).build();
+		return accountRepo.save(accountObj);
 	}
 	
 	// get all accounts
 	public List<Account> list(String customerId) {
 		util.validateCustomer(customerId);
-		log.info("Customer fetched of id : {} ", customerId);
+		log.info(CUSTOMER_FETCHED, customerId);
 		List<Account> allAccounts = accountRepo.findAll();
 		List<Account> accounts = new ArrayList<>();
 		for(Account acc : allAccounts) {
-			if(acc.getCustomerId().equals(customerId)) {
+			if(acc.getCustomerId().equals(customerId) && acc.isActive()) {
 				accounts.add(acc);
 			}
 		}
@@ -48,15 +54,13 @@ public class AccountService {
 	// get account by account number
 	public Account getByAccountNumber(String customerId, String accountNumber) {
 		util.validateCustomer(customerId);
-		log.info("Customer fetched of id : {} ", customerId);
+		log.info(CUSTOMER_FETCHED, customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
 		if(account.getCustomerId().equals(customerId) && account.isActive()) 
 			return account;
 		else
 			throw new NoSuchElementException(INVALID_ACCOUNT_NUMBER);
 	}
-
-
 
 	// delete account by account number
 	public Account delete(String customerId, String accountNumber) throws CustomerNotMatchAccount {
@@ -65,12 +69,12 @@ public class AccountService {
 		if(account.getCustomerId().equals(customerId))
 			accountRepo.delete(account);
 		else 
-			throw new CustomerNotMatchAccount("Customer not matching account" + accountNumber);
+			throw new CustomerNotMatchAccount("Customer not matching account of number : " + accountNumber);
 		return account;
 	}
 
 	// de-activating account
-	public Account deactivate(String customerId, String accountNumber) throws NotActiveException {
+	public Account deactivate(String customerId, String accountNumber) {
 		util.validateCustomer(customerId);
 		Account account = accountRepo.findByAccountNumber(accountNumber);
 		if (account == null)

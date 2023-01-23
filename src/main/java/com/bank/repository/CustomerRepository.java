@@ -1,13 +1,18 @@
 package com.bank.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
-
+import java.util.List;
+import java.util.Optional;
 import com.bank.entity.Customer;
 
-@Repository
-public interface CustomerRepository extends MongoRepository<Customer, String>{
+public interface CustomerRepository{
+		
+	Customer save(Customer customer);
+	Optional<Customer> findById(String id);
+	List<Customer> findAll();
+	void delete(Customer customer);
 	
 	Customer findByAadhar(String aadhar);
-
+	Customer findByCustomerIdOrAadhar (String customerId, String aadhar);
+	Customer findByCustomerIdAndAadharAndName(String customerId, String aadhar, String name);
+	
 }

@@ -1,5 +1,16 @@
 package com.bank.entity;
 
 public enum AccountType {
-	SAVING, SALARY, CURRENT
+
+	SAVINGS("SAVINGS"), SALARY("SALARY"), CURRENT("CURRENT");
+	
+	private String type;
+	private AccountType(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		return type;
+	}
+	
 }
