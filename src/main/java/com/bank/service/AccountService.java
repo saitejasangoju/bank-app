@@ -48,12 +48,8 @@ public class AccountService {
 
 	public Account deactivate(String customerId, String accountNumber) throws Exception {
 		util.validateCustomer(customerId);
-		Account account = accountRepo.findByAccountNumber(accountNumber)
-				.orElseThrow(() -> new Exception("Account doesn't exist with number " + accountNumber));
-		if (account.isActive())
-			account.setActive(false);
-		else
-			throw new Exception("Account is not ACTIVE");
+		Account account = util.getAccount(accountNumber);
+		account.setActive(false);
 		return accountRepo.save(account);
 	}
 
