@@ -17,7 +17,7 @@ import lombok.Setter;
 @Document(value="account")
 public class Account {
 	@Id
-	private String aid;
+	private String id;
 	private String customerId;
 	private String accountNumber;
 	@Valid

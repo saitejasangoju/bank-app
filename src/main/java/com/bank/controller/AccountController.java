@@ -1,12 +1,12 @@
 package com.bank.controller;
 
-import java.io.NotActiveException;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,47 +18,50 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bank.dto.AccountDto;
 import com.bank.entity.Account;
-import com.bank.exception.CustomerNotMatchAccount;
 import com.bank.service.AccountService;
 
-
 @RestController
-@RequestMapping("/api/v1/customers")
+@RequestMapping("/api/v1/customers/{customerId}/accounts")
 public class AccountController {
-	
+
 	@Autowired
 	private AccountService service;
-	
+
 	@Autowired
-	ModelMapper modelMapper;
-	
-	@GetMapping("/{customerId}/accounts")
-	public List<Account> list(@PathVariable String customerId){
-		return service.list(customerId);
+	private ModelMapper modelMapper;
+
+	@PostMapping
+	public ResponseEntity<Account> create(@RequestBody @Valid AccountDto accountDto) {
+		return ResponseEntity.ok(service.create(modelMapper.map(accountDto, Account.class)));
 	}
-	
-	@GetMapping("/{customerId}/accounts/{accountNumber}")
-	public Account get(@PathVariable String customerId, @PathVariable String accountNumber) throws CustomerNotMatchAccount {
-		return service.getByAccountNumber(customerId, accountNumber);
+
+	@GetMapping
+	public ResponseEntity<List<Account>> list(@PathVariable String customerId) throws Exception {
+		return ResponseEntity.ok(service.list(customerId));
 	}
-	
-	@PostMapping("/{customerId}/accounts")
-	public Account create(@RequestBody @Valid AccountDto accountDto) {
-		return service.create(modelMapper.map(accountDto, Account.class));
+
+	@GetMapping("/{accountNumber}")
+	public ResponseEntity<Account> get(@PathVariable String customerId, @PathVariable String accountNumber)
+			throws Exception {
+		return ResponseEntity.ok(service.getByAccountNumber(customerId, accountNumber));
 	}
-	
-	@DeleteMapping("/{customerId}/accounts/{accountNumber}")
-	public Account delete(@PathVariable String customerId, @PathVariable String accountNumber) throws CustomerNotMatchAccount {
-		return service.delete(customerId, accountNumber);
+
+	@DeleteMapping("/{accountNumber}")
+	public ResponseEntity<Account> delete(@PathVariable String customerId, @PathVariable String accountNumber)
+			throws Exception {
+		service.delete(customerId, accountNumber);
+		return ResponseEntity.ok().build();
 	}
-	
-	@PutMapping("/{customerId}/accounts/{accountNumber}/activate")
-	public Account activate(@PathVariable String customerId, @PathVariable String accountNumber) {
-		return service.activate(customerId, accountNumber);
+
+	@PutMapping("/{accountNumber}/activate")
+	public ResponseEntity<Account> activate(@PathVariable String customerId, @PathVariable String accountNumber)
+			throws Exception {
+		return ResponseEntity.ok(service.activate(customerId, accountNumber));
 	}
-	
-	@PutMapping("/{customerId}/accounts/{accountNumber}/deactivate")
-	public Account deactivate(@PathVariable String customerId, @PathVariable String accountNumber) throws NotActiveException {
-		return service.deactivate(customerId, accountNumber);
+
+	@PutMapping("/{accountNumber}/deactivate")
+	public ResponseEntity<Account> deactivate(@PathVariable String customerId, @PathVariable String accountNumber)
+			throws Exception {
+		return ResponseEntity.ok(service.deactivate(customerId, accountNumber));
 	}
 }

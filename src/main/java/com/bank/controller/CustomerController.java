@@ -1,9 +1,7 @@
 package com.bank.controller;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -24,41 +22,36 @@ import com.bank.dto.CustomerUpdateDto;
 import com.bank.entity.Customer;
 import com.bank.service.CustomerService;
 
-import springfox.documentation.annotations.ApiIgnore;
-
 @RestController
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
-	
+
 	@Autowired
-	private CustomerService service;
-	
+	private CustomerService customerService;
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
-	@ApiIgnore
-	@GetMapping("/home")
-	public void home(HttpServletResponse response) throws IOException {
-		response.sendRedirect("/swagger-ui.html");
-	}
-	
+
 	@GetMapping
 	public ResponseEntity<List<Customer>> list() {
-		return ResponseEntity.ok(service.list());
+		return ResponseEntity.ok(customerService.list());
 	}
 
 	@PostMapping
 	public ResponseEntity<Customer> create(@RequestBody @Valid CustomerDto customer) throws Exception {
-		return new ResponseEntity<>(service.create(modelMapper.map(customer, Customer.class)), HttpStatus.CREATED);
+		return new ResponseEntity<>(customerService.create(modelMapper.map(customer, Customer.class)),
+				HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/{customerId}")
-	public ResponseEntity<Customer> update(@PathVariable String customerId, @RequestBody CustomerUpdateDto customer) {
-		return new ResponseEntity<>(service.update(customerId, customer), HttpStatus.ACCEPTED);
+	public ResponseEntity<Customer> update(@PathVariable String customerId, @RequestBody CustomerUpdateDto customer)
+			throws Exception {
+		return ResponseEntity.ok(customerService.update(customerId, customer));
 	}
-	 
+
 	@DeleteMapping("/{customerId}")
-	public ResponseEntity<Customer> delete(@PathVariable String customerId) {
-		return new ResponseEntity<>(service.delete(customerId), HttpStatus.OK);
+	public ResponseEntity<Customer> delete(@PathVariable String customerId) throws Exception {
+		customerService.delete(customerId);
+		return ResponseEntity.ok(null);
 	}
 }
