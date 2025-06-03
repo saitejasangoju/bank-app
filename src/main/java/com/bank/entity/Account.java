@@ -1,6 +1,6 @@
 package com.bank.entity;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
